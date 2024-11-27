@@ -1,0 +1,22 @@
+.dashboard-main {
+  background-color: #f4f5f7;
+  min-height: 100vh;
+}
+
+.card {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature-box h5 {
+  font-weight: bold;
+  color: #343a40;
+}
+
+.feature-box p {
+  color: #6c757d;
+}

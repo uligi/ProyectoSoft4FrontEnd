@@ -1,72 +1,19 @@
-const Layout = ({ children, setView }) => {
+const Layout = ({ children, setView, userName, onLogout }) => {
   return (
     <div className="sb-nav-fixed">
       {/* Navbar Superior */}
-      <nav className="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a className="navbar-brand ps-3" href="#!">
-          Start Bootstrap
+      <nav className="sb-topnav navbar navbar-expand navbar-light bg-gradient">
+        <a className="navbar-brand ps-3 text-primary fw-bold" href="#!">
+          Notionday
         </a>
-        <button
-          className="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
-          id="sidebarToggle"
-        >
-          <i className="fas fa-bars"></i>
-        </button>
-        <form className="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-          <div className="input-group">
-            <input
-              className="form-control"
-              type="text"
-              placeholder="Search for..."
-              aria-label="Search for..."
-              aria-describedby="btnNavbarSearch"
-            />
-            <button
-              className="btn btn-primary"
-              id="btnNavbarSearch"
-              type="button"
-            >
-              <i className="fas fa-search"></i>
-            </button>
-          </div>
-        </form>
-        <ul className="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-          <li className="nav-item dropdown">
-            <a
-              className="nav-link dropdown-toggle"
-              id="navbarDropdown"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <i className="fas fa-user fa-fw"></i>
-            </a>
-            <ul
-              className="dropdown-menu dropdown-menu-end"
-              aria-labelledby="navbarDropdown"
-            >
-              <li>
-                <a className="dropdown-item" href="#!">
-                  Settings
-                </a>
-              </li>
-              <li>
-                <a className="dropdown-item" href="#!">
-                  Activity Log
-                </a>
-              </li>
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-              <li>
-                <a className="dropdown-item" href="#!">
-                  Logout
-                </a>
-              </li>
-            </ul>
-          </li>
-        </ul>
+        <div className="d-flex ms-auto align-items-center">
+          {/* Nombre del usuario */}
+          <span className="me-3 text-primary fw-bold">{userName}</span>
+          {/* Botón de Cerrar Sesión */}
+          <button className="btn btn-primary me-3" onClick={onLogout}>
+            Cerrar Sesión
+          </button>
+        </div>
       </nav>
 
       {/* Layout Principal */}
@@ -74,46 +21,98 @@ const Layout = ({ children, setView }) => {
         {/* Menú Lateral */}
         <div id="layoutSidenav_nav">
           <nav
-            className="sb-sidenav accordion sb-sidenav-light"
+            className="sb-sidenav accordion sb-sidenav-light bg-light"
             id="sidenavAccordion"
           >
             <div className="sb-sidenav-menu">
               <div className="nav">
-                <div className="sb-sidenav-menu-heading">Core</div>
+                <div className="sb-sidenav-menu-heading text-primary">
+                  Navegación
+                </div>
                 <button
                   className="btn btn-link sb-nav-link"
                   onClick={() => setView("dashboard")}
                 >
-                  <div className="sb-nav-link-icon">
+                  <div className="sb-nav-link-icon text-primary">
                     <i className="fas fa-tachometer-alt"></i>
                   </div>
                   Dashboard
                 </button>
-                <div className="sb-sidenav-menu-heading">Interface</div>
+                <div className="sb-sidenav-menu-heading text-primary">
+                  Módulos
+                </div>
                 <button
                   className="btn btn-link sb-nav-link"
                   onClick={() => setView("usuarios")}
                 >
-                  <div className="sb-nav-link-icon">
+                  <div className="sb-nav-link-icon text-primary">
                     <i className="fas fa-user"></i>
                   </div>
                   Usuarios
                 </button>
                 <button
                   className="btn btn-link sb-nav-link"
-                  onClick={() => setView("kanban")}
+                  onClick={() => setView("roles")}
                 >
-                  <div className="sb-nav-link-icon">
-                    <i className="fas fa-columns"></i>
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
                   </div>
-                  Kanban
+                  Roles
+                </button>
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("permisos")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Permisos
+                </button>
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("portafolio")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Portafolio
+                </button>
+
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("equipos")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Equipos
+                </button>
+
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("proyectos")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Proyectos
+                </button>
+
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("miembrosEquipos")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Miembros de Equipos
                 </button>
               </div>
             </div>
 
-            <div className="sb-sidenav-footer">
-              <div className="small">Logged in as:</div>
-              Start Bootstrap
+            <div className="sb-sidenav-footer bg-gradient text-primary">
+              <div className="small">Conectado como:</div>
+              {userName}
             </div>
           </nav>
         </div>
@@ -121,18 +120,18 @@ const Layout = ({ children, setView }) => {
         {/* Contenido Principal */}
         <div id="layoutSidenav_content">
           <main>
-            <div className="container-fluid px-4">{children}</div>
+            <div className="container-fluid px-4 py-3">{children}</div>
           </main>
           <footer className="py-4 bg-light mt-auto">
             <div className="container-fluid px-4">
               <div className="d-flex align-items-center justify-content-between small">
                 <div className="text-muted">
-                  Copyright &copy; Your Website 2023
+                  Copyright &copy; Notionday 2023
                 </div>
                 <div>
-                  <a href="#!">Privacy Policy</a>
+                  <a href="#!">Política de Privacidad</a>
                   &middot;
-                  <a href="#!">Terms &amp; Conditions</a>
+                  <a href="#!">Términos y Condiciones</a>
                 </div>
               </div>
             </div>

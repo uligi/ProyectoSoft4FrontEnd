@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const GestionUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -18,7 +19,6 @@ const GestionUsuarios = () => {
       const response = await axios.get(
         "http://localhost:5234/api/ApiUsuarios/ListaUsuarios"
       );
-      console.log("Usuarios recibidos:", response.data); // Muestra los datos en la consola
       setUsuarios(response.data);
     } catch (error) {
       console.error("Error al listar usuarios:", error);
@@ -39,86 +39,128 @@ const GestionUsuarios = () => {
   const abrirModal = (usuario) => {
     setUsuarioSeleccionado(
       usuario || {
-        id: 0,
-        nombre: "",
-        apellido: "",
-        cedula: "",
-        correo: "",
-        rolID: 0, // Asegúrate de que el valor inicial de rolID sea 0
+        idUsuarios: 0,
+        Nombre: "",
+        Email: "",
+        idRoles: 0, // Cambiado a idRoles
       }
     );
+    setMensajeError(""); // Limpiar mensajes de error
     setModalVisible(true);
   };
 
   const guardarUsuario = async () => {
-    const { id, cedula, nombre, apellido, correo, rolID } = usuarioSeleccionado;
+    const { idUsuarios, Nombre, Email, idRoles } = usuarioSeleccionado;
 
-    if (!cedula || !nombre || !apellido || !correo || rolID === 0) {
+    if (!Nombre || !Email || idRoles === 0) {
       setMensajeError("Todos los campos son obligatorios.");
       return;
     }
 
     try {
+      const usuario = {
+        Nombre,
+        Email,
+        idRoles, // Incluido idRoles
+      };
+
       const url =
-        id === 0
-          ? "http://localhost:5234/api/ApiUsuarios/AgregarUsuario"
-          : `http://localhost:5234/api/ApiUsuarios/ActualizarUsuario/${id}`;
+        idUsuarios === 0
+          ? "http://localhost:5234/api/ApiUsuarios/NuevoUsuario"
+          : `http://localhost:5234/api/ApiUsuarios/ActualizarUsuario/${idUsuarios}`;
 
-      const response = await axios.post(url, {
-        id,
-        cedula,
-        nombre,
-        apellido,
-        correo,
-        rolID,
-      });
+      const response =
+        idUsuarios === 0
+          ? await axios.post(url, usuario)
+          : await axios.put(url, usuario);
 
-      if (response.data.success) {
-        listarUsuarios();
+      if (response.status === 200) {
+        await listarUsuarios();
         setModalVisible(false);
+        setUsuarioSeleccionado(null);
+        Swal.fire({
+          title: "Éxito",
+          text:
+            idUsuarios === 0
+              ? "Usuario creado correctamente."
+              : "Usuario actualizado correctamente.",
+          icon: "success",
+        });
       } else {
         setMensajeError("Error al guardar el usuario.");
       }
     } catch (error) {
       console.error("Error al guardar usuario:", error);
+      setMensajeError(
+        "Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo."
+      );
     }
   };
 
-  const eliminarUsuario = async (id) => {
+  const eliminarUsuario = async (idUsuarios) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5234/api/ApiUsuarios/EliminarUsuario/${id}`
+        `http://localhost:5234/api/ApiUsuarios/EliminarUsuario/${idUsuarios}`
       );
-      if (response.data.success) {
+      if (response.status === 200) {
         listarUsuarios();
+        Swal.fire(
+          "Eliminado",
+          "El usuario ha sido eliminado correctamente.",
+          "success"
+        );
       }
     } catch (error) {
       console.error("Error al eliminar usuario:", error);
+      Swal.fire(
+        "Error",
+        "Hubo un problema al intentar eliminar el usuario.",
+        "error"
+      );
     }
+  };
+
+  const confirmarEliminacion = (idUsuarios) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará al usuario y no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: '<i class="fas fa-trash-alt"></i> Eliminar',
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        eliminarUsuario(idUsuarios);
+      }
+    });
   };
 
   return (
     <div className="container mt-4">
       <ol className="breadcrumb mb-4">
         <li className="breadcrumb-item">
-          <a href="#!">Administrar</a>
+          <a href="#!" className="text-primary">
+            Administrar
+          </a>
         </li>
         <li className="breadcrumb-item active">Usuarios</li>
       </ol>
 
-      <div className="card">
-        <div className="card-header">
-          <i className="fas fa-user me-1"></i> Lista de Usuarios
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-gradient text-white">
+          <i className="fas fa-user me-2"></i> Gestión de Usuarios
         </div>
         <div className="card-body">
           <button
-            className="btn btn-success mb-3"
+            className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
-            Agregar
+            <i className="fas fa-plus-circle me-2"></i>Agregar Usuario
           </button>
-          <table className="table table-bordered">
-            <thead>
+          <table className="table table-hover">
+            <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -130,22 +172,28 @@ const GestionUsuarios = () => {
             <tbody>
               {usuarios.map((usuario, index) => (
                 <tr key={usuario.idUsuarios || index}>
-                  <td>{usuario.idUsuarios}</td>{" "}
-                  {/* Usa idUsuarios en lugar de cedula */}
-                  <td>{usuario.Nombre}</td> {/* Usa Nombre */}
-                  <td>{usuario.Email}</td>{" "}
-                  {/* Usa Email para mostrar el correo */}
-                  <td>{usuario.Activo ? "Sí" : "No"}</td> {/* Usa Activo */}
+                  <td>{usuario.idUsuarios}</td>
+                  <td>{usuario.Nombre}</td>
+                  <td>{usuario.Email}</td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        usuario.Activo ? "bg-success" : "bg-danger"
+                      }`}
+                    >
+                      {usuario.Activo ? "Sí" : "No"}
+                    </span>
+                  </td>
                   <td>
                     <button
-                      className="btn btn-primary me-2"
+                      className="btn btn-primary btn-sm me-2"
                       onClick={() => abrirModal(usuario)}
                     >
                       Editar
                     </button>
                     <button
-                      className="btn btn-danger"
-                      onClick={() => eliminarUsuario(usuario.idUsuarios)}
+                      className="btn btn-danger btn-sm"
+                      onClick={() => confirmarEliminacion(usuario.idUsuarios)}
                     >
                       Eliminar
                     </button>
@@ -159,11 +207,11 @@ const GestionUsuarios = () => {
 
       {modalVisible && (
         <div className="modal show d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
+          <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">
-                  {usuarioSeleccionado.id === 0
+                  {usuarioSeleccionado.idUsuarios === 0
                     ? "Agregar Usuario"
                     : "Editar Usuario"}
                 </h5>
@@ -179,39 +227,11 @@ const GestionUsuarios = () => {
                   <input
                     type="text"
                     className="form-control"
-                    value={usuarioSeleccionado.nombre}
+                    value={usuarioSeleccionado.Nombre}
                     onChange={(e) =>
                       setUsuarioSeleccionado({
                         ...usuarioSeleccionado,
-                        nombre: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Apellido</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={usuarioSeleccionado.apellido}
-                    onChange={(e) =>
-                      setUsuarioSeleccionado({
-                        ...usuarioSeleccionado,
-                        apellido: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Cédula</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={usuarioSeleccionado.cedula}
-                    onChange={(e) =>
-                      setUsuarioSeleccionado({
-                        ...usuarioSeleccionado,
-                        cedula: e.target.value,
+                        Nombre: e.target.value,
                       })
                     }
                   />
@@ -221,11 +241,11 @@ const GestionUsuarios = () => {
                   <input
                     type="email"
                     className="form-control"
-                    value={usuarioSeleccionado.correo}
+                    value={usuarioSeleccionado.Email}
                     onChange={(e) =>
                       setUsuarioSeleccionado({
                         ...usuarioSeleccionado,
-                        correo: e.target.value,
+                        Email: e.target.value,
                       })
                     }
                   />
@@ -234,22 +254,24 @@ const GestionUsuarios = () => {
                   <label className="form-label">Rol</label>
                   <select
                     className="form-select"
-                    value={usuarioSeleccionado.rolID || 0} // Si es undefined o null, usa 0
-                    onChange={(e) =>
-                      setUsuarioSeleccionado({
-                        ...usuarioSeleccionado,
-                        rolID: parseInt(e.target.value, 10), // Convierte a número
-                      })
-                    }
+                    value={usuarioSeleccionado?.idRoles || 0}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value, 10);
+                      setUsuarioSeleccionado((prev) => ({
+                        ...prev,
+                        idRoles: value,
+                      }));
+                    }}
                   >
                     <option value="0">Seleccione un Rol</option>
                     {roles.map((rol) => (
-                      <option key={rol.id || rol.Nombre_Roles} value={rol.id}>
+                      <option key={rol.idRoles} value={rol.idRoles}>
                         {rol.Nombre_Roles}
                       </option>
                     ))}
                   </select>
                 </div>
+
                 {mensajeError && (
                   <div className="alert alert-danger">{mensajeError}</div>
                 )}

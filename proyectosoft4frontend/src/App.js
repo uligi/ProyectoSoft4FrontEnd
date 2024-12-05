@@ -8,6 +8,7 @@ import GestionPortafolio from "./Paginas/GestionPortafolio";
 import GestionEquipos from "./Paginas/GestionEquipos";
 import GestionProyectos from "./Paginas/GestionProyectos";
 import GestionMiembrosEquipos from "./Paginas/GestionMiembrosEquipos";
+import GestionTareas from "./Paginas/GestionTareas";
 
 const App = () => {
   const [view, setView] = useState("dashboard");
@@ -35,6 +36,9 @@ const App = () => {
 
       case "miembrosEquipos":
         return <GestionMiembrosEquipos />;
+
+      case "tareas":
+        return <GestionTareas />;
 
       default:
         return <h1>Página no encontrada</h1>;

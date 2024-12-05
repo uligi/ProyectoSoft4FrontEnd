@@ -107,6 +107,16 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                   </div>
                   Miembros de Equipos
                 </button>
+
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("tareas")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Tareas
+                </button>
               </div>
             </div>
 

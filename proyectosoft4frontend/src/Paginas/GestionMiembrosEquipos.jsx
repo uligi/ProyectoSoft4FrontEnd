@@ -41,8 +41,8 @@ const GestionMiembrosEquipos = () => {
   const listarMiembros = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5234/api/ApiMiembros/ListarMiembros/0"
-      ); // Por defecto muestra todos
+        "http://localhost:5234/api/ApiMiembros/ListarTodosLosMiembros"
+      );
       setMiembros(response.data);
     } catch (error) {
       console.error("Error al listar miembros:", error);
@@ -154,7 +154,7 @@ const GestionMiembrosEquipos = () => {
               {miembros.map((miembro) => (
                 <tr key={miembro.idMiembros_de_equipos}>
                   <td>{miembro.idMiembros_de_equipos}</td>
-                  <td>{miembro.NombreEquipos}</td>
+                  <td>{miembro.NombreEquipos}</td> {/* Cambiar aquí */}
                   <td>{miembro.NombreUsuario}</td>
                   <td>
                     <button
@@ -226,7 +226,7 @@ const GestionMiembrosEquipos = () => {
                         key={usuario.idUsuarios}
                         value={usuario.idUsuarios}
                       >
-                        {usuario.NombreUsuario}
+                        {usuario.Nombre}
                       </option>
                     ))}
                   </select>

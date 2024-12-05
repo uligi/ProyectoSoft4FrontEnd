@@ -61,6 +61,7 @@ const GestionProyectos = () => {
         Prioridad: "Media",
         idPortafolio: 0,
         Equipos_idEquipos: 0,
+        Estado: "Activo",
       }
     );
     setMensajeError("");
@@ -78,6 +79,7 @@ const GestionProyectos = () => {
       Prioridad,
       idPortafolio,
       Equipos_idEquipos,
+      Estado,
     } = proyectoSeleccionado;
 
     if (
@@ -102,6 +104,7 @@ const GestionProyectos = () => {
         Prioridad,
         idPortafolio,
         Equipos_idEquipos,
+        Estado,
       };
 
       const url =
@@ -189,6 +192,7 @@ const GestionProyectos = () => {
                 <th>Fecha Inicio</th>
                 <th>Fecha Fin</th>
                 <th>Acciones</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
@@ -224,6 +228,7 @@ const GestionProyectos = () => {
                       ? new Date(proyecto.FechaFinal).toLocaleDateString()
                       : "N/A"}
                   </td>
+                  <td>{proyecto.Estado}</td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm"
@@ -393,6 +398,24 @@ const GestionProyectos = () => {
                       })
                     }
                   />
+                </div>
+                <div className="mb-3">
+                  <label>Estado</label>
+                  <select
+                    className="form-select"
+                    value={proyectoSeleccionado.Estado || "Activo"}
+                    onChange={(e) =>
+                      setProyectoSeleccionado({
+                        ...proyectoSeleccionado,
+                        Estado: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                    <option value="Completado">Completado</option>
+                    <option value="Pendiente">Pendiente</option>
+                  </select>
                 </div>
                 {mensajeError && (
                   <div className="alert alert-danger">{mensajeError}</div>

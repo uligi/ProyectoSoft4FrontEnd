@@ -21,6 +21,7 @@ const GestionTareas = () => {
       const response = await axios.get(
         "http://localhost:5234/api/ApiTareas/ListarTareas"
       );
+
       setTareas(response.data);
     } catch (error) {
       console.error("Error al listar tareas:", error);
@@ -66,6 +67,7 @@ const GestionTareas = () => {
             Prioridad: tarea.Prioridad || "Media",
             FechaInicio: tarea.FechaInicio?.split("T")[0] || "",
             FechaFinal: tarea.FechaFinal?.split("T")[0] || "",
+            Estado: tarea.Estado || "En proceso",
           }
         : {
             idTareas: 0,
@@ -76,6 +78,7 @@ const GestionTareas = () => {
             FechaFinal: "",
             idProyectos: 0,
             idUsuarios: 0,
+            Estado: "Activo",
             Activo: true,
           }
     );
@@ -93,6 +96,7 @@ const GestionTareas = () => {
       FechaFinal,
       idProyectos,
       idUsuarios,
+      Estado,
     } = tareaSeleccionada;
 
     // Validar campos obligatorios
@@ -110,6 +114,7 @@ const GestionTareas = () => {
         FechaFinal: formatDate(FechaFinal),
         idProyectos,
         idUsuarios: idUsuarios || null,
+        Estado: Estado || "Activo",
       };
 
       const url =
@@ -142,9 +147,8 @@ const GestionTareas = () => {
 
   const eliminarTarea = async (idTareas) => {
     try {
-      const response = await axios.put(
-        `http://localhost:5234/api/ApiTareas/ActualizarTarea/${idTareas}`,
-        { Activo: false }
+      const response = await axios.delete(
+        `http://localhost:5234/api/ApiTareas/EliminarTarea/${idTareas}`
       );
       if (response.status === 200) {
         await listarTareas();
@@ -198,6 +202,7 @@ const GestionTareas = () => {
                 <th>Prioridad</th>
                 <th>Fecha Inicio</th>
                 <th>Fecha Final</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -212,6 +217,7 @@ const GestionTareas = () => {
                   <td>{tarea.Prioridad}</td>
                   <td>{tarea.FechaInicio || "Sin asignar"}</td>
                   <td>{tarea.FechaFinal || "Sin asignar"}</td>
+                  <td>{tarea.Estado || "Activo"}</td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm"
@@ -365,6 +371,24 @@ const GestionTareas = () => {
                         {usuario.Nombre}
                       </option>
                     ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label>Estado</label>
+                  <select
+                    className="form-select"
+                    value={tareaSeleccionada.Estado || "Activo"}
+                    onChange={(e) =>
+                      setTareaSeleccionada({
+                        ...tareaSeleccionada,
+                        Estado: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                    <option value="Completado">Completado</option>
+                    <option value="Pendiente">Pendiente</option>
                   </select>
                 </div>
                 {mensajeError && (

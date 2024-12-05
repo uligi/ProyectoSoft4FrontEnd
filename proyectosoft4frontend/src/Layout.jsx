@@ -38,8 +38,9 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                   </div>
                   Dashboard
                 </button>
+
                 <div className="sb-sidenav-menu-heading text-primary">
-                  Módulos
+                  Seguridad
                 </div>
                 <button
                   className="btn btn-link sb-nav-link"
@@ -68,6 +69,10 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                   </div>
                   Permisos
                 </button>
+
+                <div className="sb-sidenav-menu-heading text-primary">
+                  Portafolio
+                </div>
                 <button
                   className="btn btn-link sb-nav-link"
                   onClick={() => setView("portafolio")}
@@ -77,7 +82,6 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                   </div>
                   Portafolio
                 </button>
-
                 <button
                   className="btn btn-link sb-nav-link"
                   onClick={() => setView("equipos")}
@@ -87,7 +91,6 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                   </div>
                   Equipos
                 </button>
-
                 <button
                   className="btn btn-link sb-nav-link"
                   onClick={() => setView("proyectos")}
@@ -97,7 +100,6 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                   </div>
                   Proyectos
                 </button>
-
                 <button
                   className="btn btn-link sb-nav-link"
                   onClick={() => setView("miembrosEquipos")}
@@ -108,6 +110,9 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                   Miembros de Equipos
                 </button>
 
+                <div className="sb-sidenav-menu-heading text-primary">
+                  Tareas
+                </div>
                 <button
                   className="btn btn-link sb-nav-link"
                   onClick={() => setView("tareas")}
@@ -116,6 +121,24 @@ const Layout = ({ children, setView, userName, onLogout }) => {
                     <i className="fas fa-user"></i>
                   </div>
                   Tareas
+                </button>
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("subTareas")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Sub-Tareas
+                </button>
+                <button
+                  className="btn btn-link sb-nav-link"
+                  onClick={() => setView("comentarios")}
+                >
+                  <div className="sb-nav-link-icon text-primary">
+                    <i className="fas fa-user"></i>
+                  </div>
+                  Comentarios
                 </button>
               </div>
             </div>

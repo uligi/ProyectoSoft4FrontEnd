@@ -9,6 +9,8 @@ import GestionEquipos from "./Paginas/GestionEquipos";
 import GestionProyectos from "./Paginas/GestionProyectos";
 import GestionMiembrosEquipos from "./Paginas/GestionMiembrosEquipos";
 import GestionTareas from "./Paginas/GestionTareas";
+import GestionSubTareas from "./Paginas/GestionSubTareas";
+import GestionComentarios from "./Paginas/GestionComentarios";
 
 const App = () => {
   const [view, setView] = useState("dashboard");
@@ -39,6 +41,12 @@ const App = () => {
 
       case "tareas":
         return <GestionTareas />;
+
+      case "subTareas":
+        return <GestionSubTareas />;
+
+      case "comentarios":
+        return <GestionComentarios />;
 
       default:
         return <h1>Página no encontrada</h1>;

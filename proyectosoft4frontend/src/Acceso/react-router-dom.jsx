@@ -9,8 +9,20 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/cambiar-clave" element={<CambiarClave />} />
+
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
+      <Route
+        path="/usuarios"
+        element={
+          permisos.includes("Usuarios") ? (
+            <GestionUsuarios />
+          ) : (
+            <Navigate to="/dashboard" />
+          )
+        }
+      />
     </Router>
   );
 };

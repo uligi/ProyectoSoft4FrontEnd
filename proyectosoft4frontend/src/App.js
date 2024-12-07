@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Layout from "./Layout";
 import Login from "./Acceso/Login";
+import CambiarClave from "./Acceso/CambiarClave";
 import DashboardMain from "./Paginas/Dashboard";
 import GestionUsuarios from "./Paginas/GestionUsuarios";
 import GestionRoles from "./Paginas/GestionRoles";
@@ -22,21 +23,30 @@ import GestionComentariosSubTareas from "./Paginas/GestionComentariosSubTareas";
 import GestionComentariosTareas from "./Paginas/GestionComentariosTareas";
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
 
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      setUser(JSON.parse(userData)); // Restaurar el usuario desde localStorage
+    } else {
+      setUser(null); // Asegurarse de limpiar el usuario si no hay token
     }
+
+    setIsLoading(false); // Finaliza la carga inicial
   }, []);
 
   const onLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setUser(null);
+    setUser(null); // Limpiar el estado del usuario
   };
 
   const ProtectedRoute = ({ children }) => {
@@ -46,24 +56,31 @@ const App = () => {
     return children;
   };
 
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
   return (
     <Router>
       <Routes>
+        {/* Ruta de Login */}
         <Route path="/login" element={<Login setUser={setUser} />} />
+
+        {/* Ruta para cambiar clave */}
+        <Route path="/cambiar-clave" element={<CambiarClave />} />
+
+        {/* Rutas protegidas */}
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <Layout
-                setView={() => {}}
-                userName={user?.Nombre}
-                onLogout={onLogout}
-              >
-                <DashboardMain />
-              </Layout>
+              <Layout userName={user?.Nombre} onLogout={onLogout} />
             </ProtectedRoute>
           }
         >
+          {/* Ruta por defecto: Dashboard */}
+          <Route index element={<Navigate to="dashboard" replace />} />
+          {/* Subrutas dentro del Layout */}
           <Route path="dashboard" element={<DashboardMain />} />
           <Route path="usuarios" element={<GestionUsuarios />} />
           <Route path="roles" element={<GestionRoles />} />

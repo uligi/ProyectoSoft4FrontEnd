@@ -1,4 +1,16 @@
-const Layout = ({ children, setView, userName, onLogout }) => {
+import React from "react";
+import { useNavigate, Outlet } from "react-router-dom";
+import usePermisos from "./hooks/Permisos";
+
+const Layout = ({ userName, onLogout }) => {
+  const user = JSON.parse(localStorage.getItem("user")); // Obtiene el usuario del localStorage
+  const { permisos, error } = usePermisos(user?.idUsuarios);
+  const navigate = useNavigate(); // Inicializa navigate
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <div className="sb-nav-fixed">
       {/* Navbar Superior */}
@@ -7,9 +19,7 @@ const Layout = ({ children, setView, userName, onLogout }) => {
           Notionday
         </a>
         <div className="d-flex ms-auto align-items-center">
-          {/* Nombre del usuario */}
           <span className="me-3 text-primary fw-bold">{userName}</span>
-          {/* Botón de Cerrar Sesión */}
           <button className="btn btn-primary me-3" onClick={onLogout}>
             Cerrar Sesión
           </button>
@@ -20,153 +30,135 @@ const Layout = ({ children, setView, userName, onLogout }) => {
       <div id="layoutSidenav">
         {/* Menú Lateral */}
         <div id="layoutSidenav_nav">
-          <nav
-            className="sb-sidenav accordion sb-sidenav-light bg-light"
-            id="sidenavAccordion"
-          >
+          <nav className="sb-sidenav accordion sb-sidenav-light bg-light">
             <div className="sb-sidenav-menu">
               <div className="nav">
-                <div className="sb-sidenav-menu-heading text-primary">
-                  Navegación
-                </div>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("dashboard")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-tachometer-alt"></i>
-                  </div>
-                  Dashboard
-                </button>
+                {/* Nivel 1: Todos los permisos */}
+                {permisos === "Nivel 1" && (
+                  <>
+                    <div className="sb-sidenav-menu-heading text-primary">
+                      Navegación
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      Dashboard
+                    </button>
+                    <div className="sb-sidenav-menu-heading text-primary">
+                      Seguridad
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/usuarios")}
+                    >
+                      Usuarios
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/roles")}
+                    >
+                      Roles
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/permisos")}
+                    >
+                      Permisos
+                    </button>
+                    <div className="sb-sidenav-menu-heading text-primary">
+                      Portafolio
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/portafolio")}
+                    >
+                      Portafolio
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/equipos")}
+                    >
+                      Equipos
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/proyectos")}
+                    >
+                      Proyectos
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/tareas")}
+                    >
+                      Tareas
+                    </button>
+                  </>
+                )}
 
-                <div className="sb-sidenav-menu-heading text-primary">
-                  Seguridad
-                </div>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("usuarios")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Usuarios
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("roles")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Roles
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("permisos")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Permisos
-                </button>
+                {/* Nivel 2: No puede ver seguridad */}
+                {permisos === "Nivel 2" && (
+                  <>
+                    <div className="sb-sidenav-menu-heading text-primary">
+                      Navegación
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      Dashboard
+                    </button>
+                    <div className="sb-sidenav-menu-heading text-primary">
+                      Portafolio
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/portafolio")}
+                    >
+                      Portafolio
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/equipos")}
+                    >
+                      Equipos
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/proyectos")}
+                    >
+                      Proyectos
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/tareas")}
+                    >
+                      Tareas
+                    </button>
+                  </>
+                )}
 
-                <div className="sb-sidenav-menu-heading text-primary">
-                  Portafolio
-                </div>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("portafolio")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Portafolio
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("equipos")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Equipos
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("proyectos")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Proyectos
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("miembrosEquipos")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Miembros de Equipos
-                </button>
-
-                <div className="sb-sidenav-menu-heading text-primary">
-                  Tareas
-                </div>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("tareas")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Tareas
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("subTareas")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Sub-Tareas
-                </button>
-                <div className="sb-sidenav-menu-heading text-primary">
-                  Comentarios
-                </div>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("comentariosProyectos")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Comentarios Proyectos
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("comentariosTareas")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Comentarios Tareas
-                </button>
-                <button
-                  className="btn btn-link sb-nav-link"
-                  onClick={() => setView("comentariosSubTareas")}
-                >
-                  <div className="sb-nav-link-icon text-primary">
-                    <i className="fas fa-user"></i>
-                  </div>
-                  Comentarios Sub-Tareas
-                </button>
+                {/* Nivel 3: Solo puede ver Proyectos y Tareas */}
+                {permisos === "Nivel 3" && (
+                  <>
+                    <div className="sb-sidenav-menu-heading text-primary">
+                      Proyectos y Tareas
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/proyectos")}
+                    >
+                      Proyectos
+                    </button>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/tareas")}
+                    >
+                      Tareas
+                    </button>
+                  </>
+                )}
               </div>
-            </div>
-
-            <div className="sb-sidenav-footer bg-gradient text-primary">
-              <div className="small">Conectado como:</div>
-              {userName}
             </div>
           </nav>
         </div>
@@ -174,7 +166,10 @@ const Layout = ({ children, setView, userName, onLogout }) => {
         {/* Contenido Principal */}
         <div id="layoutSidenav_content">
           <main>
-            <div className="container-fluid px-4 py-3">{children}</div>
+            <div className="container-fluid px-4 py-3">
+              {/* Renderizar subrutas aquí */}
+              <Outlet />
+            </div>
           </main>
           <footer className="py-4 bg-light mt-auto">
             <div className="container-fluid px-4">

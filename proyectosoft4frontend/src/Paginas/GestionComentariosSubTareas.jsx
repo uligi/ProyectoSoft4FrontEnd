@@ -2,41 +2,28 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const GestionComentarios = () => {
-  const [proyectos, setProyectos] = useState([]);
-  const [tareas, setTareas] = useState([]);
-  const [subtareas, setSubtareas] = useState([]);
+const GestionComentariosSubtareas = () => {
   const [comentarios, setComentarios] = useState([]);
+  const [subtareas, setSubtareas] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [comentarioSeleccionado, setComentarioSeleccionado] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
 
   useEffect(() => {
-    listarProyectos();
-    listarTareas();
-    listarSubtareas();
     listarComentarios();
+    listarSubtareas();
+    listarUsuarios();
   }, []);
 
-  const listarProyectos = async () => {
+  const listarComentarios = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5234/api/ApiProyectos/ListaProyectos"
+        "http://localhost:5234/api/ApiComentariosSubtareas/ListarComentarios"
       );
-      setProyectos(response.data);
+      setComentarios(response.data);
     } catch (error) {
-      console.error("Error al listar proyectos:", error);
-    }
-  };
-
-  const listarTareas = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5234/api/ApiTareas/ListarTareas"
-      );
-      setTareas(response.data);
-    } catch (error) {
-      console.error("Error al listar tareas:", error);
+      console.error("Error al listar comentarios:", error);
     }
   };
 
@@ -51,14 +38,14 @@ const GestionComentarios = () => {
     }
   };
 
-  const listarComentarios = async () => {
+  const listarUsuarios = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5234/api/ApiComentarios/ListarComentarios"
+        "http://localhost:5234/api/ApiUsuarios/ListaUsuarios"
       );
-      setComentarios(response.data);
+      setUsuarios(response.data);
     } catch (error) {
-      console.error("Error al listar comentarios:", error);
+      console.error("Error al listar usuarios:", error);
     }
   };
 
@@ -67,94 +54,98 @@ const GestionComentarios = () => {
       comentario
         ? { ...comentario }
         : {
-            idComentarios: 0,
+            idComentario: 0,
             Comentario: "",
-            FechaCreacion: new Date().toISOString(),
+            FechaCreacion: new Date().toISOString().split("T")[0],
             Activo: true,
-            Tareas_idTareas: null,
-            idSubtareas: null,
-            idProyectos: null,
+            idSubtarea: 0,
+            idUsuario: 0,
           }
     );
-    setModalVisible(true);
     setMensajeError("");
+    setModalVisible(true);
   };
 
   const guardarComentario = async () => {
     const {
-      idComentarios,
+      idComentario,
       Comentario,
+      FechaCreacion,
       Activo,
-      Tareas_idTareas,
-      idSubtareas,
-      idProyectos,
+      idSubtarea,
+      idUsuario,
     } = comentarioSeleccionado;
 
-    if (!Comentario.trim()) {
-      setMensajeError("El comentario no puede estar vacío.");
+    if (!Comentario.trim() || idSubtarea === 0 || idUsuario === 0) {
+      setMensajeError(
+        "Los campos Comentario, Subtarea y Usuario son obligatorios."
+      );
       return;
     }
 
     try {
-      const comentario = {
+      const comentarioData = {
         Comentario,
+        FechaCreacion,
         Activo,
-        Tareas_idTareas,
-        idSubtareas,
-        idProyectos,
+        idSubtarea,
+        idUsuario,
       };
 
       const url =
-        idComentarios === 0
-          ? "http://localhost:5234/api/ApiComentarios/AgregarComentario"
-          : `http://localhost:5234/api/ApiComentarios/ActualizarComentario/${idComentarios}`;
+        idComentario === 0
+          ? "http://localhost:5234/api/ApiComentariosSubtareas/AgregarComentario"
+          : `http://localhost:5234/api/ApiComentariosSubtareas/ActualizarComentario/${idComentario}`;
 
-      const response =
-        idComentarios === 0
-          ? await axios.post(url, comentario)
-          : await axios.put(url, comentario);
-
-      if (response.status === 200) {
-        await listarComentarios();
-        setModalVisible(false);
-        Swal.fire({
-          title: "Éxito",
-          text:
-            idComentarios === 0
-              ? "Comentario agregado correctamente."
-              : "Comentario actualizado correctamente.",
-          icon: "success",
-        });
+      if (idComentario === 0) {
+        await axios.post(url, comentarioData);
+        Swal.fire("Éxito", "Comentario agregado correctamente.", "success");
+      } else {
+        await axios.put(url, comentarioData);
+        Swal.fire("Éxito", "Comentario actualizado correctamente.", "success");
       }
+
+      listarComentarios();
+      setModalVisible(false);
     } catch (error) {
       console.error("Error al guardar comentario:", error);
-      setMensajeError("Error al guardar el comentario.");
+      setMensajeError("Hubo un error al procesar la solicitud.");
     }
   };
 
-  const eliminarComentario = async (idComentarios) => {
+  const eliminarComentario = async (idComentario) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:5234/api/ApiComentarios/EliminarComentario/${idComentarios}`
+      await axios.delete(
+        `http://localhost:5234/api/ApiComentariosSubtareas/EliminarComentario/${idComentario}`
       );
-      if (response.status === 200) {
-        await listarComentarios();
-        Swal.fire(
-          "Eliminado",
-          "Comentario eliminado correctamente.",
-          "success"
-        );
-      }
+      Swal.fire("Eliminado", "Comentario eliminado correctamente.", "success");
+      listarComentarios();
     } catch (error) {
       console.error("Error al eliminar comentario:", error);
       Swal.fire("Error", "No se pudo eliminar el comentario.", "error");
     }
   };
 
+  const confirmarEliminacion = (idComentario) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará el comentario.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Eliminar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        eliminarComentario(idComentario);
+      }
+    });
+  };
+
   return (
     <div className="container mt-4">
       <div className="card">
-        <div className="card-header">Gestión de Comentarios</div>
+        <div className="card-header">Gestión de Comentarios de Subtareas</div>
         <div className="card-body">
           <button
             className="btn btn-success mb-3"
@@ -167,33 +158,19 @@ const GestionComentarios = () => {
               <tr>
                 <th>ID</th>
                 <th>Comentario</th>
-                <th>Proyecto</th>
-                <th>Tarea</th>
                 <th>Subtarea</th>
+                <th>Usuario</th>
                 <th>Activo</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {comentarios.map((comentario) => (
-                <tr key={comentario.idComentarios}>
-                  <td>{comentario.idComentarios}</td>
+                <tr key={comentario.idComentario}>
+                  <td>{comentario.idComentario}</td>
                   <td>{comentario.Comentario}</td>
-                  <td>
-                    {proyectos.find(
-                      (p) => p.idProyectos === comentario.idProyectos
-                    )?.NombreProyecto || "N/A"}
-                  </td>
-                  <td>
-                    {tareas.find(
-                      (t) => t.idTareas === comentario.Tareas_idTareas
-                    )?.NombreTareas || "N/A"}
-                  </td>
-                  <td>
-                    {subtareas.find(
-                      (s) => s.idSubtareas === comentario.idSubtareas
-                    )?.NombreSubtareas || "N/A"}
-                  </td>
+                  <td>{comentario.NombreSubtarea}</td>
+                  <td>{comentario.NombreUsuario}</td>
                   <td>{comentario.Activo ? "Sí" : "No"}</td>
                   <td>
                     <button
@@ -205,7 +182,7 @@ const GestionComentarios = () => {
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() =>
-                        eliminarComentario(comentario.idComentarios)
+                        confirmarEliminacion(comentario.idComentario)
                       }
                     >
                       Eliminar
@@ -222,7 +199,11 @@ const GestionComentarios = () => {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Gestión de Comentario</h5>
+                <h5 className="modal-title">
+                  {comentarioSeleccionado.idComentario === 0
+                    ? "Agregar Comentario"
+                    : "Editar Comentario"}
+                </h5>
                 <button
                   className="btn-close"
                   onClick={() => setModalVisible(false)}
@@ -244,57 +225,14 @@ const GestionComentarios = () => {
                   ></textarea>
                 </div>
                 <div className="mb-3">
-                  <label>Proyecto</label>
-                  <select
-                    className="form-select"
-                    value={comentarioSeleccionado.idProyectos || 0}
-                    onChange={(e) =>
-                      setComentarioSeleccionado({
-                        ...comentarioSeleccionado,
-                        idProyectos: parseInt(e.target.value, 10),
-                      })
-                    }
-                  >
-                    <option value="0">Seleccione un proyecto</option>
-                    {proyectos.map((proyecto) => (
-                      <option
-                        key={proyecto.idProyectos}
-                        value={proyecto.idProyectos}
-                      >
-                        {proyecto.NombreProyecto}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label>Tarea</label>
-                  <select
-                    className="form-select"
-                    value={comentarioSeleccionado.Tareas_idTareas || 0}
-                    onChange={(e) =>
-                      setComentarioSeleccionado({
-                        ...comentarioSeleccionado,
-                        Tareas_idTareas: parseInt(e.target.value, 10),
-                      })
-                    }
-                  >
-                    <option value="0">Seleccione una tarea</option>
-                    {tareas.map((tarea) => (
-                      <option key={tarea.idTareas} value={tarea.idTareas}>
-                        {tarea.NombreTareas}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="mb-3">
                   <label>Subtarea</label>
                   <select
                     className="form-select"
-                    value={comentarioSeleccionado.idSubtareas || 0}
+                    value={comentarioSeleccionado.idSubtarea}
                     onChange={(e) =>
                       setComentarioSeleccionado({
                         ...comentarioSeleccionado,
-                        idSubtareas: parseInt(e.target.value, 10),
+                        idSubtarea: parseInt(e.target.value, 10),
                       })
                     }
                   >
@@ -307,6 +245,45 @@ const GestionComentarios = () => {
                         {subtarea.NombreSubtareas}
                       </option>
                     ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label>Usuario</label>
+                  <select
+                    className="form-select"
+                    value={comentarioSeleccionado.idUsuario}
+                    onChange={(e) =>
+                      setComentarioSeleccionado({
+                        ...comentarioSeleccionado,
+                        idUsuario: parseInt(e.target.value, 10),
+                      })
+                    }
+                  >
+                    <option value="0">Seleccione un usuario</option>
+                    {usuarios.map((usuario) => (
+                      <option
+                        key={usuario.idUsuarios}
+                        value={usuario.idUsuarios}
+                      >
+                        {usuario.Nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label>Activo</label>
+                  <select
+                    className="form-select"
+                    value={comentarioSeleccionado.Activo ? "true" : "false"}
+                    onChange={(e) =>
+                      setComentarioSeleccionado({
+                        ...comentarioSeleccionado,
+                        Activo: e.target.value === "true",
+                      })
+                    }
+                  >
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
                   </select>
                 </div>
                 {mensajeError && (
@@ -332,4 +309,4 @@ const GestionComentarios = () => {
   );
 };
 
-export default GestionComentarios;
+export default GestionComentariosSubtareas;

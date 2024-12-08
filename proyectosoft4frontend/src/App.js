@@ -21,6 +21,10 @@ import GestionSubTareas from "./Paginas/GestionSubTareas";
 import GestionComentariosProyectos from "./Paginas/GestionComentariosProyectos";
 import GestionComentariosSubTareas from "./Paginas/GestionComentariosSubTareas";
 import GestionComentariosTareas from "./Paginas/GestionComentariosTareas";
+import Reportes from "./Paginas/Reportes";
+import Error400 from "./PaginasErrores/400";
+import Error404 from "./PaginasErrores/404";
+import Error500 from "./PaginasErrores/500";
 
 const App = () => {
   const [user, setUser] = useState(() => {
@@ -91,6 +95,7 @@ const App = () => {
           <Route path="miembrosEquipos" element={<GestionMiembrosEquipos />} />
           <Route path="tareas" element={<GestionTareas />} />
           <Route path="subTareas" element={<GestionSubTareas />} />
+          <Route path="reportes" element={<Reportes />} />
           <Route
             path="comentariosProyectos"
             element={<GestionComentariosProyectos />}
@@ -103,6 +108,10 @@ const App = () => {
             path="comentariosSubTareas"
             element={<GestionComentariosSubTareas />}
           />
+          <Route path="/error-400" element={<Error400 />} />
+          <Route path="/error-404" element={<Error404 />} />
+          <Route path="/error-500" element={<Error500 />} />
+          <Route path="*" element={<Error404 />} />
         </Route>
       </Routes>
     </Router>

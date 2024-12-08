@@ -7,10 +7,10 @@ const DashboardMain = () => {
       <div className="container py-5">
         {/* Header */}
         <header className="text-center mb-5">
-          <h1 className="display-4">Bienvenido al Dashboard</h1>
+          <h1 className="display-4">Bienvenido a Notionday</h1>
           <p className="lead">
-            Gestiona tus portafolios, proyectos, subtareas y mucho más desde un
-            único lugar.
+            Sistema gubernamental para la gestión integral de proyectos y
+            tareas.
           </p>
         </header>
 
@@ -21,9 +21,10 @@ const DashboardMain = () => {
               <div className="card-body text-center">
                 <h5 className="card-title">Portafolios</h5>
                 <p className="card-text">
-                  Visualiza y administra los portafolios activos.
+                  Administra los portafolios de proyectos activos y
+                  estratégicos.
                 </p>
-                <a href="/portafolios" className="btn btn-primary">
+                <a href="/portafolio" className="btn btn-primary">
                   Ver Portafolios
                 </a>
               </div>
@@ -34,7 +35,8 @@ const DashboardMain = () => {
               <div className="card-body text-center">
                 <h5 className="card-title">Proyectos</h5>
                 <p className="card-text">
-                  Explora todos los proyectos dentro de tus portafolios.
+                  Visualiza y controla todos los proyectos asociados a los
+                  portafolios.
                 </p>
                 <a href="/proyectos" className="btn btn-success">
                   Ver Proyectos
@@ -45,12 +47,12 @@ const DashboardMain = () => {
           <div className="col-md-4">
             <div className="card h-100 shadow-sm">
               <div className="card-body text-center">
-                <h5 className="card-title">Tablero Kanban</h5>
+                <h5 className="card-title">Tareas</h5>
                 <p className="card-text">
-                  Organiza tus subtareas por prioridad en un tablero visual.
+                  Gestiona y asigna tareas dentro de cada proyecto.
                 </p>
-                <a href="/kanban" className="btn btn-warning">
-                  Ir al Tablero Kanban
+                <a href="/tareas" className="btn btn-warning">
+                  Ver Tareas
                 </a>
               </div>
             </div>
@@ -64,22 +66,24 @@ const DashboardMain = () => {
             <div className="col-md-6">
               <div className="feature-box">
                 <h5>
-                  <i className="bi bi-bar-chart-line-fill me-2"></i> Análisis en
-                  Tiempo Real
+                  <i className="bi bi-clipboard-data me-2"></i> Informes
+                  Personalizados
                 </h5>
                 <p>
-                  Obtén informes detallados de tus proyectos y subtareas para
-                  tomar decisiones rápidas.
+                  Genera informes detallados para la toma de decisiones
+                  estratégicas.
                 </p>
               </div>
             </div>
             <div className="col-md-6">
               <div className="feature-box">
                 <h5>
-                  <i className="bi bi-people-fill me-2"></i> Gestión de Equipos
+                  <i className="bi bi-people-fill me-2"></i> Colaboración en
+                  Equipos
                 </h5>
                 <p>
-                  Administra los equipos asignados a cada portafolio y proyecto.
+                  Coordina y supervisa los equipos de trabajo asignados a
+                  proyectos.
                 </p>
               </div>
             </div>

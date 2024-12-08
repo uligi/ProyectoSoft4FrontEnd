@@ -4,8 +4,8 @@ import Swal from "sweetalert2";
 
 const GestionComentariosProyectos = () => {
   const [comentarios, setComentarios] = useState([]);
-  const [proyectos, setProyectos] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
+  const [proyectos, setProyectos] = useState([]); // Usado en el formulario de asignación
+  const [usuarios, setUsuarios] = useState([]); // Usado en el formulario de asignación
   const [comentarioSeleccionado, setComentarioSeleccionado] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
@@ -23,7 +23,12 @@ const GestionComentariosProyectos = () => {
       );
       setComentarios(response.data);
     } catch (error) {
-      console.error("Error al listar comentarios:", error);
+      console.error(
+        "Error al listar comentarios:",
+        error.response?.data || error.message
+      );
+      setComentarios([]);
+      Swal.fire("Error", "No se pudieron cargar los comentarios.", "error");
     }
   };
 
@@ -35,6 +40,8 @@ const GestionComentariosProyectos = () => {
       setProyectos(response.data);
     } catch (error) {
       console.error("Error al listar proyectos:", error);
+      setProyectos([]);
+      Swal.fire("Error", "No se pudieron cargar los proyectos.", "error");
     }
   };
 
@@ -46,15 +53,15 @@ const GestionComentariosProyectos = () => {
       setUsuarios(response.data);
     } catch (error) {
       console.error("Error al listar usuarios:", error);
+      setUsuarios([]);
+      Swal.fire("Error", "No se pudieron cargar los usuarios.", "error");
     }
   };
 
   const abrirModal = (comentario) => {
     setComentarioSeleccionado(
       comentario
-        ? {
-            ...comentario,
-          }
+        ? { ...comentario }
         : {
             idComentario: 0,
             Comentario: "",
@@ -81,7 +88,6 @@ const GestionComentariosProyectos = () => {
       const comentario = {
         Comentario,
         FechaCreacion: new Date().toISOString(),
-        Activo,
         idProyecto,
         idUsuario,
       };
@@ -173,37 +179,46 @@ const GestionComentariosProyectos = () => {
               </tr>
             </thead>
             <tbody>
-              {comentarios.map((comentario) => (
-                <tr key={comentario.idComentario}>
-                  <td>{comentario.idComentario}</td>
-                  <td>{comentario.Comentario}</td>
-                  <td>{comentario.NombreProyecto}</td>
-                  <td>{comentario.NombreUsuario}</td>
-                  <td>{comentario.Activo ? "Sí" : "No"}</td>
-                  <td>{comentario.FechaCreacion.split("T")[0]}</td>
-                  <td>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => abrirModal(comentario)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() =>
-                        confirmarEliminacion(comentario.idComentario)
-                      }
-                    >
-                      Eliminar
-                    </button>
+              {comentarios.length > 0 ? (
+                comentarios.map((comentario) => (
+                  <tr key={comentario.idComentario}>
+                    <td>{comentario.idComentario}</td>
+                    <td>{comentario.Comentario}</td>
+                    <td>{comentario.NombreProyecto}</td>
+                    <td>{comentario.NombreUsuario}</td>
+                    <td>{comentario.Activo ? "Sí" : "No"}</td>
+                    <td>{comentario.FechaCreacion.split("T")[0]}</td>
+                    <td>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => abrirModal(comentario)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>
+                          confirmarEliminacion(comentario.idComentario)
+                        }
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    No hay registros
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
+      {/* Modal */}
       {modalVisible && (
         <div className="modal show d-block">
           <div className="modal-dialog">

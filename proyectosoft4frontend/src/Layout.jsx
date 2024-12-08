@@ -11,6 +11,35 @@ const Layout = ({ userName, onLogout }) => {
     return <p>{error}</p>;
   }
 
+  const renderSubMenu = (title, links) => (
+    <div>
+      <button
+        className="btn btn-link sb-nav-link"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target={`#submenu-${title}`}
+        aria-expanded="false"
+        aria-controls={`submenu-${title}`}
+      >
+        {title}
+      </button>
+      <div className="collapse" id={`submenu-${title}`}>
+        <ul className="sb-sidenav-menu-nested nav">
+          {links.map((link) => (
+            <li key={link.label}>
+              <button
+                className="btn btn-link sb-nav-link"
+                onClick={() => navigate(link.path)}
+              >
+                {link.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+
   return (
     <div className="sb-nav-fixed">
       {/* Navbar Superior */}
@@ -33,7 +62,6 @@ const Layout = ({ userName, onLogout }) => {
           <nav className="sb-sidenav accordion sb-sidenav-light bg-light">
             <div className="sb-sidenav-menu">
               <div className="nav">
-                {/* Nivel 1: Todos los permisos */}
                 {permisos === "Nivel 1" && (
                   <>
                     <div className="sb-sidenav-menu-heading text-primary">
@@ -43,60 +71,56 @@ const Layout = ({ userName, onLogout }) => {
                       className="btn btn-link sb-nav-link"
                       onClick={() => navigate("/dashboard")}
                     >
-                      Dashboard
+                      Inicio
                     </button>
                     <div className="sb-sidenav-menu-heading text-primary">
                       Seguridad
                     </div>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/usuarios")}
-                    >
-                      Usuarios
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/roles")}
-                    >
-                      Roles
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/permisos")}
-                    >
-                      Permisos
-                    </button>
+                    {renderSubMenu("Seguridad", [
+                      { label: "Usuarios", path: "/usuarios" },
+                      { label: "Roles", path: "/roles" },
+                      { label: "Permisos", path: "/permisos" },
+                    ])}
                     <div className="sb-sidenav-menu-heading text-primary">
                       Portafolio
                     </div>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/portafolio")}
-                    >
-                      Portafolio
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/equipos")}
-                    >
-                      Equipos
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/proyectos")}
-                    >
-                      Proyectos
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/tareas")}
-                    >
+                    {renderSubMenu("Portafolio", [
+                      { label: "Portafolio", path: "/portafolio" },
+                      { label: "Equipos", path: "/equipos" },
+                      { label: "Proyectos", path: "/proyectos" },
+                      {
+                        label: "Comentarios de Proyectos",
+                        path: "/comentariosProyectos",
+                      },
+                    ])}
+                    <div className="sb-sidenav-menu-heading text-primary">
                       Tareas
+                    </div>
+                    {renderSubMenu("Tareas", [
+                      { label: "Tareas", path: "/tareas" },
+                      {
+                        label: "Comentarios de Tareas",
+                        path: "/comentariosTareas",
+                      },
+                    ])}
+                    {renderSubMenu("Sub-Tareas", [
+                      { label: "Sub-Tareas", path: "/subTareas" },
+                      {
+                        label: "Comentarios de Sub-Tareas",
+                        path: "/comentariosSubtareas",
+                      },
+                    ])}
+                    <div className="sb-sidenav-menu-heading text-primary">
+                      Reportes
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link"
+                      onClick={() => navigate("/reportes")}
+                    >
+                      Reportes
                     </button>
                   </>
                 )}
-
-                {/* Nivel 2: No puede ver seguridad */}
                 {permisos === "Nivel 2" && (
                   <>
                     <div className="sb-sidenav-menu-heading text-primary">
@@ -111,51 +135,32 @@ const Layout = ({ userName, onLogout }) => {
                     <div className="sb-sidenav-menu-heading text-primary">
                       Portafolio
                     </div>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/portafolio")}
-                    >
-                      Portafolio
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/equipos")}
-                    >
-                      Equipos
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/proyectos")}
-                    >
-                      Proyectos
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/tareas")}
-                    >
-                      Tareas
-                    </button>
+                    {renderSubMenu("Portafolio", [
+                      { label: "Portafolio", path: "/portafolio" },
+                      { label: "Equipos", path: "/equipos" },
+                      { label: "Proyectos", path: "/proyectos" },
+                    ])}
                   </>
                 )}
-
-                {/* Nivel 3: Solo puede ver Proyectos y Tareas */}
                 {permisos === "Nivel 3" && (
                   <>
                     <div className="sb-sidenav-menu-heading text-primary">
                       Proyectos y Tareas
                     </div>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/proyectos")}
-                    >
-                      Proyectos
-                    </button>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/tareas")}
-                    >
-                      Tareas
-                    </button>
+                    {renderSubMenu("Proyectos", [
+                      { label: "Proyectos", path: "/proyectos" },
+                      {
+                        label: "Comentarios de Proyectos",
+                        path: "/comentariosProyectos",
+                      },
+                    ])}
+                    {renderSubMenu("Tareas", [
+                      { label: "Tareas", path: "/tareas" },
+                      {
+                        label: "Comentarios de Tareas",
+                        path: "/comentariosTareas",
+                      },
+                    ])}
                   </>
                 )}
               </div>

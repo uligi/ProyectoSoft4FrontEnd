@@ -23,6 +23,9 @@ const Reportes = () => {
   }, []);
 
   const fetchProyectos = async () => {
+    // Limpiar los proyectos antes de la nueva búsqueda
+    setProyectos([]);
+
     try {
       const response = await axios.get(
         `http://localhost:5234/api/Reportes/Proyectos`,
@@ -37,11 +40,14 @@ const Reportes = () => {
       setProyectos(response.data);
     } catch (error) {
       console.error("Error al obtener los proyectos:", error);
-      alert("No se encontraron proyectos o ocurrió un error.");
+      setProyectos([]); // Asegurarse de que la tabla se vacíe si hay un error
     }
   };
 
   const fetchTareas = async () => {
+    // Limpiar las tareas antes de la nueva búsqueda
+    setTareas([]);
+
     try {
       const response = await axios.get(
         `http://localhost:5234/api/Reportes/Tareas`,
@@ -56,7 +62,7 @@ const Reportes = () => {
       setTareas(response.data);
     } catch (error) {
       console.error("Error al obtener las tareas:", error);
-      alert("No se encontraron tareas o ocurrió un error.");
+      setTareas([]); // Asegurarse de que la tabla se vacíe si hay un error
     }
   };
 

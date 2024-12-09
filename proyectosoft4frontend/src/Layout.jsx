@@ -88,27 +88,15 @@ const Layout = ({ userName, onLogout }) => {
                       { label: "Portafolio", path: "/portafolio" },
                       { label: "Equipos", path: "/equipos" },
                       { label: "Proyectos", path: "/proyectos" },
-                      {
-                        label: "Comentarios de Proyectos",
-                        path: "/comentariosProyectos",
-                      },
                     ])}
                     <div className="sb-sidenav-menu-heading text-primary">
                       Tareas
                     </div>
                     {renderSubMenu("Tareas", [
                       { label: "Tareas", path: "/tareas" },
-                      {
-                        label: "Comentarios de Tareas",
-                        path: "/comentariosTareas",
-                      },
                     ])}
                     {renderSubMenu("Sub-Tareas", [
                       { label: "Sub-Tareas", path: "/subTareas" },
-                      {
-                        label: "Comentarios de Sub-Tareas",
-                        path: "/comentariosSubtareas",
-                      },
                     ])}
                     <div className="sb-sidenav-menu-heading text-primary">
                       Reportes

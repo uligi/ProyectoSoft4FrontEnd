@@ -9,6 +9,13 @@ const GestionTareas = () => {
   const [tareaSeleccionada, setTareaSeleccionada] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
+  const [comentarios, setComentarios] = useState([]);
+  const [modalComentariosVisible, setModalComentariosVisible] = useState(false);
+  const [comentarioEditando, setComentarioEditando] = useState(null);
+  const [textoEditando, setTextoEditando] = useState("");
+  const [nuevoComentario, setNuevoComentario] = useState("");
+
+  const [idUsuarioSesion] = useState(1);
 
   useEffect(() => {
     listarTareas();
@@ -130,6 +137,7 @@ const GestionTareas = () => {
       if (response.status === 200) {
         await listarTareas();
         setModalVisible(false);
+        setTareaSeleccionada(null);
         Swal.fire({
           title: "Éxito",
           text:
@@ -179,6 +187,90 @@ const GestionTareas = () => {
       }
     });
   };
+  const listarComentarios = async (idTarea) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5234/api/ApiComentariosTareas/ListarComentariosPorTarea?idTarea=${idTarea}`
+      );
+
+      setComentarios(response.data);
+      setModalComentariosVisible(true);
+    } catch (error) {
+      console.error("Error al listar comentarios:", error);
+    }
+  };
+
+  const abrirComentarios = (Tarea) => {
+    setTareaSeleccionada(Tarea);
+    listarComentarios(Tarea.idTareas);
+  };
+
+  const editarComentario = async (id, texto) => {
+    try {
+      await axios.put(
+        `http://localhost:5234/api/ApiComentariosTareas/ActualizarComentario/${id}`,
+        {
+          idComentario: id,
+          Comentario: texto,
+        }
+      );
+
+      listarComentarios(tareaSeleccionada.idTareas);
+
+      setComentarioEditando(null);
+      Swal.fire(
+        "Actualizado",
+        "Comentario actualizado correctamente.",
+        "success"
+      );
+    } catch (error) {
+      console.error("Error al actualizar comentario:", error);
+      Swal.fire("Error", "No se pudo actualizar el comentario.", "error");
+    }
+  };
+  const eliminarComentario = async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:5234/api/ApiComentariosTareas/EliminarComentario/${id}`
+      );
+      listarComentarios(tareaSeleccionada.idTareas);
+      Swal.fire("Eliminado", "Comentario eliminado correctamente.", "success");
+    } catch (error) {
+      console.error("Error al eliminar comentario:", error);
+      Swal.fire("Error", "No se pudo eliminar el comentario.", "error");
+    }
+  };
+
+  const agregarComentario = async () => {
+    if (!nuevoComentario.trim()) {
+      Swal.fire("Error", "El comentario no puede estar vacío.", "error");
+      return;
+    }
+
+    try {
+      const fechaActual = new Date().toISOString();
+      const comentario = {
+        Comentario: nuevoComentario,
+        FechaCreacion: fechaActual,
+        idTarea: tareaSeleccionada.idTareas,
+        idUsuario: idUsuarioSesion,
+      };
+
+      const response = await axios.post(
+        "http://localhost:5234/api/ApiComentariosTareas/AgregarComentario",
+        comentario
+      );
+
+      if (response.status === 200) {
+        setNuevoComentario(""); // Limpiar el campo de texto
+        listarComentarios(tareaSeleccionada.idTareas); // Refrescar la lista
+        Swal.fire("Éxito", "Comentario agregado correctamente.", "success");
+      }
+    } catch (error) {
+      console.error("Error al agregar comentario:", error.response || error);
+      Swal.fire("Error", "No se pudo agregar el comentario.", "error");
+    }
+  };
 
   return (
     <div className="container mt-4">
@@ -219,6 +311,12 @@ const GestionTareas = () => {
                   <td>{tarea.FechaFinal || "Sin asignar"}</td>
                   <td>{tarea.Estado || "Activo"}</td>
                   <td>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => abrirComentarios(tarea)}
+                    >
+                      Comentarios
+                    </button>
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={() => abrirModal(tarea)}
@@ -264,6 +362,20 @@ const GestionTareas = () => {
                       setTareaSeleccionada({
                         ...tareaSeleccionada,
                         NombreTareas: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="mb-3">
+                  <label>Nombre del Proyecto</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={tareaSeleccionada.NombreTarea}
+                    onChange={(e) =>
+                      setTareaSeleccionada({
+                        ...tareaSeleccionada,
+                        NombreTarea: e.target.value,
                       })
                     }
                   />
@@ -404,6 +516,105 @@ const GestionTareas = () => {
                 </button>
                 <button className="btn btn-primary" onClick={guardarTarea}>
                   Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {modalComentariosVisible && (
+        <div className="modal show d-block">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  Comentarios de {tareaSeleccionada.NombreTarea}
+                </h5>
+                <button
+                  className="btn-close"
+                  onClick={() => setModalComentariosVisible(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <ul className="list-group mb-3">
+                  {comentarios.map((comentario) => (
+                    <li
+                      className="list-group-item"
+                      key={comentario.idComentario}
+                    >
+                      {comentarioEditando === comentario.idComentario ? (
+                        <>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={textoEditando}
+                            onChange={(e) => setTextoEditando(e.target.value)}
+                          />
+                          <button
+                            className="btn btn-success btn-sm"
+                            onClick={() =>
+                              editarComentario(
+                                comentario.idComentario,
+                                textoEditando
+                              )
+                            }
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => setComentarioEditando(null)}
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {comentario.Comentario} -{" "}
+                          <small>{comentario.NombreUsuario}</small>
+                          <button
+                            className="btn btn-warning btn-sm ms-2"
+                            onClick={() => {
+                              setComentarioEditando(comentario.idComentario);
+                              setTextoEditando(comentario.Comentario);
+                            }}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm ms-2"
+                            onClick={() =>
+                              eliminarComentario(comentario.idComentario)
+                            }
+                          >
+                            ❌
+                          </button>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="modal-footer">
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Nuevo comentario"
+                    value={nuevoComentario}
+                    onChange={(e) => setNuevoComentario(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-primary" onClick={agregarComentario}>
+                  Agregar Comentario
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setModalComentariosVisible(false)}
+                >
+                  Cerrar
                 </button>
               </div>
             </div>

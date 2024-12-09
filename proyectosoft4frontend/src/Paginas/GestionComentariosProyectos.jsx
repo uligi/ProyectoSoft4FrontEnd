@@ -76,7 +76,7 @@ const GestionComentariosProyectos = () => {
   };
 
   const guardarComentario = async () => {
-    const { idComentario, Comentario, idProyecto, idUsuario, Activo } =
+    const { idComentario, Comentario, idProyecto, idUsuario } =
       comentarioSeleccionado;
 
     if (!Comentario.trim() || idProyecto === 0 || idUsuario === 0) {
@@ -125,6 +125,7 @@ const GestionComentariosProyectos = () => {
       const response = await axios.delete(
         `http://localhost:5234/api/ApiComentariosProyectos/EliminarComentario/${idComentario}`
       );
+
       if (response.status === 200) {
         listarComentarios();
         Swal.fire(

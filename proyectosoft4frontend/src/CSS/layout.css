@@ -1,0 +1,76 @@
+/* Cambiar el fondo de la barra lateral */
+#layoutSidenav_nav .bg-light {
+    background-color: #161d24  !important;
+    border-bottom-right-radius: 8px;
+    
+}
+
+#root > div > nav {
+    background-color: #161d24  !important;
+    border-bottom-right-radius: 8px;
+}
+
+#submenu-Seguridad > ul {
+    background-color: #161d24  !important;
+    border-radius: 8px; /* Ajusta el valor para redondear los bordes */
+    padding: 10px; /* Opcional: añade un poco de espacio interno */
+}
+
+#submenu-Portafolio > ul {
+    background-color :#161d24 !important;
+}
+
+#submenu-Tareas > ul {
+    background-color :#161d24 !important;
+}
+
+#submenu-Sub-Tareas > ul {
+    background-color :#161d24 !important;
+}
+*/
+
+/* Cambiar el color de los encabezados de sección (por ejemplo, "Navegación", "Seguridad") */
+#layoutSidenav_nav .sb-sidenav-menu-heading {
+    color: #0d6efd; /* Azul primario (Bootstrap) */
+    font-weight: bold;
+}
+
+/* Cambiar el estilo de los botones principales */
+#layoutSidenav_nav .sb-nav-link {
+    color: #495057; /* Color gris oscuro */
+    font-size: 1rem;
+    text-align: left;
+}
+
+#layoutSidenav_nav .sb-nav-link:hover {
+    color: #0d6efd; /* Cambiar a azul al pasar el mouse */
+    background-color: rgba(13, 110, 253, 0.1); /* Fondo azul claro */
+}
+
+/* Cambiar el fondo y estilo de los submenús (por ejemplo, Seguridad, Portafolio) */
+#layoutSidenav_nav .collapse .sb-sidenav-menu-nested {
+    background-color: #e9ecef; /* Color de fondo para submenús */
+    padding-left: 15px;
+}
+
+/* Estilo de los enlaces dentro de los submenús */
+#layoutSidenav_nav .sb-sidenav-menu-nested .sb-nav-link {
+    color: #6c757d; /* Gris claro */
+}
+
+#layoutSidenav_nav .sb-sidenav-menu-nested .sb-nav-link:hover {
+    color: #0d6efd; /* Azul en hover */
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Cambiar el color del botón activo */
+#layoutSidenav_nav .sb-nav-link.active {
+    color: #ffffff; /* Blanco */
+    background-color: #0d6efd; /* Azul primario */
+}
+
+/* Cambiar el color del texto de los botones de colapso */
+#layoutSidenav_nav .btn-link {
+    color: #0d6efd; /* Gris oscuro */
+}
+

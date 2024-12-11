@@ -1,6 +1,8 @@
 import React from "react";
+import "./CSS/layout.css";
 import { useNavigate, Outlet } from "react-router-dom";
 import usePermisos from "./hooks/Permisos";
+
 
 const Layout = ({ userName, onLogout }) => {
   const user = JSON.parse(localStorage.getItem("user")); // Obtiene el usuario del localStorage

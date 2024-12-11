@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlusCircle,
+  faEdit,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+  faTasks,
+  faExclamationCircle,
+  faInfoCircle,
+  faCheckDouble,
+  faClock,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
+import usePermisos from "../hooks/Permisos";
 
 const GestionProyectos = () => {
   const [proyectos, setProyectos] = useState([]);
@@ -15,7 +30,8 @@ const GestionProyectos = () => {
   const [textoEditando, setTextoEditando] = useState("");
   const [nuevoComentario, setNuevoComentario] = useState("");
 
-  const [idUsuarioSesion] = useState(1);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const { UserID } = usePermisos(user?.idUsuarios);
 
   useEffect(() => {
     listarProyectos();
@@ -240,7 +256,7 @@ const GestionProyectos = () => {
         Comentario: nuevoComentario,
         FechaCreacion: fechaActual,
         idProyecto: proyectoSeleccionado.idProyectos,
-        idUsuario: idUsuarioSesion,
+        idUsuario: user?.idUsuarios,
       };
 
       const response = await axios.post(
@@ -261,17 +277,21 @@ const GestionProyectos = () => {
 
   return (
     <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">Gestión de Proyectos</div>
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faTasks} className="me-2" />
+          Gestión de Proyectos
+        </div>
         <div className="card-body">
           <button
-            className="btn btn-success mb-3"
+            className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
+            <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
             Agregar Proyecto
           </button>
-          <table className="table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -281,8 +301,8 @@ const GestionProyectos = () => {
                 <th>Fecha Estimada</th>
                 <th>Fecha Inicio</th>
                 <th>Fecha Fin</th>
-                <th>Acciones</th>
                 <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -302,7 +322,25 @@ const GestionProyectos = () => {
                         equipo.idEquipos === proyecto.Equipos_idEquipos
                     )?.NombreEquipos || "N/A"}
                   </td>
-                  <td>{proyecto.Prioridad}</td>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={
+                        proyecto.Prioridad === "Alta"
+                          ? faExclamationCircle
+                          : proyecto.Prioridad === "Media"
+                          ? faInfoCircle
+                          : faCheckCircle
+                      }
+                      className={`text-${
+                        proyecto.Prioridad === "Alta"
+                          ? "danger"
+                          : proyecto.Prioridad === "Media"
+                          ? "warning"
+                          : "success"
+                      }`}
+                    />
+                    <span className="ms-2">{proyecto.Prioridad}</span>
+                  </td>
                   <td>
                     {proyecto.FechaEstimada
                       ? new Date(proyecto.FechaEstimada).toLocaleDateString()
@@ -318,26 +356,56 @@ const GestionProyectos = () => {
                       ? new Date(proyecto.FechaFinal).toLocaleDateString()
                       : "N/A"}
                   </td>
-                  <td>{proyecto.Estado}</td>
                   <td>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => abrirComentarios(proyecto)}
+                    <FontAwesomeIcon
+                      icon={
+                        proyecto.Estado === "Activo"
+                          ? faCheckCircle
+                          : proyecto.Estado === "Inactivo"
+                          ? faTimesCircle
+                          : proyecto.Estado === "Completado"
+                          ? faCheckDouble
+                          : faClock
+                      }
+                      className={`text-${
+                        proyecto.Estado === "Activo"
+                          ? "success"
+                          : proyecto.Estado === "Inactivo"
+                          ? "secondary"
+                          : proyecto.Estado === "Completado"
+                          ? "info"
+                          : "warning"
+                      }`}
+                    />
+                    <span className="ms-2">{proyecto.Estado}</span>
+                  </td>
+                  <td>
+                    <div
+                      className="btn-group gap-1"
+                      role="group"
+                      aria-label="Acciones"
                     >
-                      Comentarios
-                    </button>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => abrirModal(proyecto)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => confirmarEliminacion(proyecto.idProyectos)}
-                    >
-                      Eliminar
-                    </button>
+                      <button
+                        className="btn btn-info btn-sm"
+                        onClick={() => abrirComentarios(proyecto)}
+                      >
+                        <FontAwesomeIcon icon={faComments} />
+                      </button>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => abrirModal(proyecto)}
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>
+                          confirmarEliminacion(proyecto.idProyectos)
+                        }
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -345,24 +413,26 @@ const GestionProyectos = () => {
           </table>
         </div>
       </div>
+
       {modalVisible && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">
                   {proyectoSeleccionado.idProyectos === 0
                     ? "Agregar Proyecto"
                     : "Editar Proyecto"}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalVisible(false)}
                 ></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label>Nombre del Proyecto</label>
+                  <label className="form-label">Nombre</label>
                   <input
                     type="text"
                     className="form-control"
@@ -376,7 +446,7 @@ const GestionProyectos = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Descripción</label>
+                  <label className="form-label">Descripción</label>
                   <textarea
                     className="form-control"
                     rows="3"
@@ -390,7 +460,7 @@ const GestionProyectos = () => {
                   ></textarea>
                 </div>
                 <div className="mb-3">
-                  <label>Portafolio</label>
+                  <label className="form-label">Portafolio</label>
                   <select
                     className="form-select"
                     value={proyectoSeleccionado.idPortafolio}
@@ -413,7 +483,7 @@ const GestionProyectos = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label>Equipo</label>
+                  <label className="form-label">Equipo</label>
                   <select
                     className="form-select"
                     value={proyectoSeleccionado.Equipos_idEquipos}
@@ -433,7 +503,7 @@ const GestionProyectos = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label>Prioridad</label>
+                  <label className="form-label">Prioridad</label>
                   <select
                     className="form-select"
                     value={proyectoSeleccionado.Prioridad}
@@ -450,7 +520,7 @@ const GestionProyectos = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label>Fecha Estimada</label>
+                  <label className="form-label">Fecha Estimada</label>
                   <input
                     type="date"
                     className="form-control"
@@ -466,7 +536,7 @@ const GestionProyectos = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Fecha de Inicio</label>
+                  <label className="form-label">Fecha Inicio</label>
                   <input
                     type="date"
                     className="form-control"
@@ -482,7 +552,7 @@ const GestionProyectos = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Fecha de Fin</label>
+                  <label className="form-label">Fecha Fin</label>
                   <input
                     type="date"
                     className="form-control"
@@ -496,7 +566,7 @@ const GestionProyectos = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Estado</label>
+                  <label className="form-label">Estado</label>
                   <select
                     className="form-select"
                     value={proyectoSeleccionado.Estado || "Activo"}
@@ -534,13 +604,14 @@ const GestionProyectos = () => {
       )}
       {modalComentariosVisible && (
         <div className="modal show d-block">
-          <div className="modal-dialog">
+          <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-secondary text-white">
                 <h5 className="modal-title">
-                  Comentarios de {proyectoSeleccionado.NombreProyecto}
+                  Comentarios de {proyectoSeleccionado.NombreTarea}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalComentariosVisible(false)}
                 ></button>
@@ -549,56 +620,59 @@ const GestionProyectos = () => {
                 <ul className="list-group mb-3">
                   {comentarios.map((comentario) => (
                     <li
-                      className="list-group-item"
+                      className="list-group-item d-flex justify-content-between align-items-center"
                       key={comentario.idComentario}
                     >
                       {comentarioEditando === comentario.idComentario ? (
                         <>
                           <input
                             type="text"
-                            className="form-control"
+                            className="form-control me-2"
                             value={textoEditando}
                             onChange={(e) => setTextoEditando(e.target.value)}
                           />
-                          <button
-                            className="btn btn-success btn-sm"
-                            onClick={() =>
-                              editarComentario(
-                                comentario.idComentario,
-                                textoEditando
-                              )
-                            }
-                          >
-                            Guardar
-                          </button>
-                          <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => setComentarioEditando(null)}
-                          >
-                            Cancelar
-                          </button>
+                          <div className="btn-group gap-1" role="group">
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() =>
+                                editarComentario(
+                                  comentario.idComentario,
+                                  textoEditando
+                                )
+                              }
+                            >
+                              <FontAwesomeIcon icon={faCheckCircle} />
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => setComentarioEditando(null)}
+                            >
+                              <FontAwesomeIcon icon={faTimesCircle} />
+                            </button>
+                          </div>
                         </>
                       ) : (
                         <>
-                          {comentario.Comentario} -{" "}
-                          <small>{comentario.NombreUsuario}</small>
-                          <button
-                            className="btn btn-warning btn-sm ms-2"
-                            onClick={() => {
-                              setComentarioEditando(comentario.idComentario);
-                              setTextoEditando(comentario.Comentario);
-                            }}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            className="btn btn-danger btn-sm ms-2"
-                            onClick={() =>
-                              eliminarComentario(comentario.idComentario)
-                            }
-                          >
-                            ❌
-                          </button>
+                          <span>{comentario.Comentario}</span>
+                          <div className="btn-group gap-1" role="group">
+                            <button
+                              className="btn btn-warning btn-sm"
+                              onClick={() => {
+                                setComentarioEditando(comentario.idComentario);
+                                setTextoEditando(comentario.Comentario);
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() =>
+                                eliminarComentario(comentario.idComentario)
+                              }
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          </div>
                         </>
                       )}
                     </li>
@@ -606,7 +680,7 @@ const GestionProyectos = () => {
                 </ul>
               </div>
               <div className="modal-footer">
-                <div className="mb-3">
+                <div className="input-group">
                   <input
                     type="text"
                     className="form-control"
@@ -614,14 +688,17 @@ const GestionProyectos = () => {
                     value={nuevoComentario}
                     onChange={(e) => setNuevoComentario(e.target.value)}
                   />
+                  <button
+                    className="btn btn-primary"
+                    onClick={agregarComentario}
+                  >
+                    <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
+                    Agregar
+                  </button>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={agregarComentario}>
-                  Agregar Comentario
-                </button>
                 <button
-                  className="btn btn-secondary"
+                  type="button"
+                  className="btn btn-secondary mt-2"
                   onClick={() => setModalComentariosVisible(false)}
                 >
                   Cerrar

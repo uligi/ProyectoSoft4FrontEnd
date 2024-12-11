@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlusCircle,
+  faEdit,
+  faTrash,
+  faBriefcase,
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const GestionPortafolio = () => {
   const [portafolios, setPortafolios] = useState([]);
@@ -120,17 +129,19 @@ const GestionPortafolio = () => {
   return (
     <div className="container mt-4">
       <div className="card shadow-sm border-0">
-        <div className="card-header bg-gradient text-white">
-          <i className="fas fa-briefcase me-2"></i> Gestión de Portafolios
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faBriefcase} className="me-2" />
+          Gestión de Portafolios
         </div>
         <div className="card-body">
           <button
             className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
-            <i className="fas fa-plus-circle me-2"></i>Agregar Portafolio
+            <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
+            Agregar Portafolio
           </button>
-          <table className="table table-hover">
+          <table className="table table-striped table-hover">
             <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
@@ -147,20 +158,19 @@ const GestionPortafolio = () => {
                   <td>{portafolio.NombrePortafolio}</td>
                   <td>{portafolio.Descripcion}</td>
                   <td>
-                    <span
-                      className={`badge ${
-                        portafolio.Activo ? "bg-success" : "bg-danger"
+                    <FontAwesomeIcon
+                      icon={portafolio.Activo ? faCheckCircle : faTimesCircle}
+                      className={`text-${
+                        portafolio.Activo ? "success" : "danger"
                       }`}
-                    >
-                      {portafolio.Activo ? "Sí" : "No"}
-                    </span>
+                    />
                   </td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm me-2"
                       onClick={() => abrirModal(portafolio)}
                     >
-                      Editar
+                      <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
@@ -168,7 +178,7 @@ const GestionPortafolio = () => {
                         confirmarEliminacion(portafolio.idPortafolio)
                       }
                     >
-                      Eliminar
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>

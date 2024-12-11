@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlusCircle,
+  faEdit,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+  faTasks,
+  faExclamationCircle,
+  faCheckDouble,
+  faClock,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
+import usePermisos from "../hooks/Permisos";
 
 const GestionTareas = () => {
   const [tareas, setTareas] = useState([]);
@@ -15,7 +29,8 @@ const GestionTareas = () => {
   const [textoEditando, setTextoEditando] = useState("");
   const [nuevoComentario, setNuevoComentario] = useState("");
 
-  const [idUsuarioSesion] = useState(1);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const { UserID } = usePermisos(user?.idUsuarios);
 
   useEffect(() => {
     listarTareas();
@@ -253,7 +268,7 @@ const GestionTareas = () => {
         Comentario: nuevoComentario,
         FechaCreacion: fechaActual,
         idTarea: tareaSeleccionada.idTareas,
-        idUsuario: idUsuarioSesion,
+        idUsuario: user?.idUsuarios,
       };
 
       const response = await axios.post(
@@ -274,17 +289,21 @@ const GestionTareas = () => {
 
   return (
     <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">Gestión de Tareas</div>
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faTasks} className="me-2" />
+          Gestión de Tareas
+        </div>
         <div className="card-body">
           <button
-            className="btn btn-success mb-3"
+            className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
+            <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
             Agregar Tarea
           </button>
-          <table className="table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -309,26 +328,50 @@ const GestionTareas = () => {
                   <td>{tarea.Prioridad}</td>
                   <td>{tarea.FechaInicio || "Sin asignar"}</td>
                   <td>{tarea.FechaFinal || "Sin asignar"}</td>
-                  <td>{tarea.Estado || "Activo"}</td>
                   <td>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => abrirComentarios(tarea)}
+                    <FontAwesomeIcon
+                      icon={
+                        tarea.Estado === "Completado"
+                          ? faCheckDouble
+                          : tarea.Estado === "Pendiente"
+                          ? faClock
+                          : faExclamationCircle
+                      }
+                      className={`text-${
+                        tarea.Estado === "Completado"
+                          ? "success"
+                          : tarea.Estado === "Pendiente"
+                          ? "warning"
+                          : "danger"
+                      }`}
+                    />
+                    {tarea.Estado}
+                  </td>
+                  <td>
+                    <div
+                      className="btn-group gap-1"
+                      role="group"
+                      aria-label="Acciones"
                     >
-                      Comentarios
-                    </button>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => abrirModal(tarea)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => confirmarEliminacion(tarea.idTareas)}
-                    >
-                      Eliminar
-                    </button>
+                      <button
+                        className="btn btn-info btn-sm me-2"
+                        onClick={() => abrirComentarios(tarea)}
+                      >
+                        <FontAwesomeIcon icon={faComments} />
+                      </button>
+                      <button
+                        className="btn btn-primary btn-sm me-2"
+                        onClick={() => abrirModal(tarea)}
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => confirmarEliminacion(tarea.idTareas)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -336,24 +379,26 @@ const GestionTareas = () => {
           </table>
         </div>
       </div>
+
       {modalVisible && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">
                   {tareaSeleccionada.idTareas === 0
                     ? "Agregar Tarea"
                     : "Editar Tarea"}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalVisible(false)}
                 ></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label>Nombre de la Tarea</label>
+                  <label className="form-label">Nombre de la Tarea</label>
                   <input
                     type="text"
                     className="form-control"
@@ -367,7 +412,7 @@ const GestionTareas = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Nombre del Proyecto</label>
+                  <label className="form-label">Nombre del Proyecto</label>
                   <input
                     type="text"
                     className="form-control"
@@ -381,7 +426,7 @@ const GestionTareas = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Descripción</label>
+                  <label className="form-label">Descripción</label>
                   <textarea
                     className="form-control"
                     rows="3"
@@ -395,7 +440,7 @@ const GestionTareas = () => {
                   ></textarea>
                 </div>
                 <div className="mb-3">
-                  <label>Prioridad</label>
+                  <label className="form-label">Prioridad</label>
                   <select
                     className="form-select"
                     value={tareaSeleccionada.Prioridad}
@@ -412,7 +457,7 @@ const GestionTareas = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label>Fecha Inicio</label>
+                  <label className="form-label">Fecha Inicio</label>
                   <input
                     type="date"
                     className="form-control"
@@ -426,7 +471,7 @@ const GestionTareas = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Fecha Final</label>
+                  <label className="form-label">Fecha Final</label>
                   <input
                     type="date"
                     className="form-control"
@@ -440,7 +485,7 @@ const GestionTareas = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Proyecto</label>
+                  <label className="form-label">Proyecto</label>
                   <select
                     className="form-select"
                     value={tareaSeleccionada.idProyectos}
@@ -463,7 +508,7 @@ const GestionTareas = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label>Usuario</label>
+                  <label className="form-label">Usuario</label>
                   <select
                     className="form-select"
                     value={tareaSeleccionada.idUsuarios || 0}
@@ -486,7 +531,7 @@ const GestionTareas = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label>Estado</label>
+                  <label className="form-label">Estado</label>
                   <select
                     className="form-select"
                     value={tareaSeleccionada.Estado || "Activo"}
@@ -509,12 +554,17 @@ const GestionTareas = () => {
               </div>
               <div className="modal-footer">
                 <button
+                  type="button"
                   className="btn btn-secondary"
                   onClick={() => setModalVisible(false)}
                 >
                   Cerrar
                 </button>
-                <button className="btn btn-primary" onClick={guardarTarea}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={guardarTarea}
+                >
                   Guardar
                 </button>
               </div>
@@ -522,15 +572,17 @@ const GestionTareas = () => {
           </div>
         </div>
       )}
+
       {modalComentariosVisible && (
         <div className="modal show d-block">
-          <div className="modal-dialog">
+          <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-secondary text-white">
                 <h5 className="modal-title">
                   Comentarios de {tareaSeleccionada.NombreTarea}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalComentariosVisible(false)}
                 ></button>
@@ -539,19 +591,19 @@ const GestionTareas = () => {
                 <ul className="list-group mb-3">
                   {comentarios.map((comentario) => (
                     <li
-                      className="list-group-item"
+                      className="list-group-item d-flex justify-content-between align-items-center"
                       key={comentario.idComentario}
                     >
                       {comentarioEditando === comentario.idComentario ? (
                         <>
                           <input
                             type="text"
-                            className="form-control"
+                            className="form-control me-2"
                             value={textoEditando}
                             onChange={(e) => setTextoEditando(e.target.value)}
                           />
                           <button
-                            className="btn btn-success btn-sm"
+                            className="btn btn-success btn-sm me-2"
                             onClick={() =>
                               editarComentario(
                                 comentario.idComentario,
@@ -559,36 +611,37 @@ const GestionTareas = () => {
                               )
                             }
                           >
-                            Guardar
+                            <FontAwesomeIcon icon={faCheckCircle} />
                           </button>
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => setComentarioEditando(null)}
                           >
-                            Cancelar
+                            <FontAwesomeIcon icon={faTimesCircle} />
                           </button>
                         </>
                       ) : (
                         <>
-                          {comentario.Comentario} -{" "}
-                          <small>{comentario.NombreUsuario}</small>
-                          <button
-                            className="btn btn-warning btn-sm ms-2"
-                            onClick={() => {
-                              setComentarioEditando(comentario.idComentario);
-                              setTextoEditando(comentario.Comentario);
-                            }}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            className="btn btn-danger btn-sm ms-2"
-                            onClick={() =>
-                              eliminarComentario(comentario.idComentario)
-                            }
-                          >
-                            ❌
-                          </button>
+                          <span>{comentario.Comentario}</span>
+                          <div>
+                            <button
+                              className="btn btn-warning btn-sm me-2"
+                              onClick={() => {
+                                setComentarioEditando(comentario.idComentario);
+                                setTextoEditando(comentario.Comentario);
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() =>
+                                eliminarComentario(comentario.idComentario)
+                              }
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          </div>
                         </>
                       )}
                     </li>
@@ -596,7 +649,7 @@ const GestionTareas = () => {
                 </ul>
               </div>
               <div className="modal-footer">
-                <div className="mb-3">
+                <div className="input-group">
                   <input
                     type="text"
                     className="form-control"
@@ -604,14 +657,17 @@ const GestionTareas = () => {
                     value={nuevoComentario}
                     onChange={(e) => setNuevoComentario(e.target.value)}
                   />
+                  <button
+                    className="btn btn-primary"
+                    onClick={agregarComentario}
+                  >
+                    <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
+                    Agregar
+                  </button>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={agregarComentario}>
-                  Agregar Comentario
-                </button>
                 <button
-                  className="btn btn-secondary"
+                  type="button"
+                  className="btn btn-secondary mt-2"
                   onClick={() => setModalComentariosVisible(false)}
                 >
                   Cerrar

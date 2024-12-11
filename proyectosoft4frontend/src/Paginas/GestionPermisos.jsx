@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faKey,
+  faPlusCircle,
+  faEdit,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const GestionPermisos = () => {
   const [permisos, setPermisos] = useState([]);
@@ -31,6 +40,7 @@ const GestionPermisos = () => {
         Activo: true,
       }
     );
+    setMensajeError(""); // Limpiar mensajes de error
     setModalVisible(true);
   };
 
@@ -107,17 +117,21 @@ const GestionPermisos = () => {
 
   return (
     <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">Gestión de Permisos</div>
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faKey} className="me-2" />
+          Gestión de Permisos
+        </div>
         <div className="card-body">
           <button
-            className="btn btn-success mb-3"
+            className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
+            <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
             Agregar Permiso
           </button>
-          <table className="table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -130,19 +144,26 @@ const GestionPermisos = () => {
                 <tr key={permiso.idPermisos}>
                   <td>{permiso.idPermisos}</td>
                   <td>{permiso.Nombre_Permisos}</td>
-                  <td>{permiso.Activo ? "Sí" : "No"}</td>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={permiso.Activo ? faCheckCircle : faTimesCircle}
+                      className={`text-${
+                        permiso.Activo ? "success" : "danger"
+                      }`}
+                    />
+                  </td>
                   <td>
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-sm me-2"
                       onClick={() => abrirModal(permiso)}
                     >
-                      Editar
+                      <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
-                      className="btn btn-danger"
+                      className="btn btn-danger btn-sm"
                       onClick={() => confirmarEliminacion(permiso.idPermisos)}
                     >
-                      Eliminar
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>
@@ -153,23 +174,24 @@ const GestionPermisos = () => {
       </div>
 
       {modalVisible && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">
                   {permisoSeleccionado.idPermisos === 0
                     ? "Agregar Permiso"
                     : "Editar Permiso"}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalVisible(false)}
                 ></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label>Nombre del Permiso</label>
+                  <label className="form-label">Nombre del Permiso</label>
                   <input
                     type="text"
                     className="form-control"
@@ -183,7 +205,7 @@ const GestionPermisos = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Activo</label>
+                  <label className="form-label">Activo</label>
                   <select
                     className="form-select"
                     value={permisoSeleccionado.Activo ? "1" : "0"}
@@ -204,12 +226,17 @@ const GestionPermisos = () => {
               </div>
               <div className="modal-footer">
                 <button
+                  type="button"
                   className="btn btn-secondary"
                   onClick={() => setModalVisible(false)}
                 >
                   Cancelar
                 </button>
-                <button className="btn btn-primary" onClick={guardarPermiso}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={guardarPermiso}
+                >
                   Guardar
                 </button>
               </div>

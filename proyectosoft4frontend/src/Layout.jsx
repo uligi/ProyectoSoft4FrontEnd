@@ -1,8 +1,16 @@
 import React from "react";
 import "./CSS/layout.css";
 import { useNavigate, Outlet } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faUserShield,
+  faProjectDiagram,
+  faTasks,
+  faChartBar,
+  faSignOutAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import usePermisos from "./hooks/Permisos";
-
 
 const Layout = ({ userName, onLogout }) => {
   const user = JSON.parse(localStorage.getItem("user")); // Obtiene el usuario del localStorage
@@ -13,7 +21,7 @@ const Layout = ({ userName, onLogout }) => {
     return <p>{error}</p>;
   }
 
-  const renderSubMenu = (title, links) => (
+  const renderSubMenu = (title, links, icon) => (
     <div>
       <button
         className="btn btn-link sb-nav-link"
@@ -23,6 +31,7 @@ const Layout = ({ userName, onLogout }) => {
         aria-expanded="false"
         aria-controls={`submenu-${title}`}
       >
+        <FontAwesomeIcon icon={icon} className="me-2" />
         {title}
       </button>
       <div className="collapse" id={`submenu-${title}`}>
@@ -45,13 +54,14 @@ const Layout = ({ userName, onLogout }) => {
   return (
     <div className="sb-nav-fixed">
       {/* Navbar Superior */}
-      <nav className="sb-topnav navbar navbar-expand navbar-light bg-gradient">
-        <a className="navbar-brand ps-3 text-primary fw-bold" href="#!">
+      <nav className="sb-topnav navbar navbar-expand navbar-light bg-primary">
+        <a className="navbar-brand ps-3 text-white fw-bold" href="#!">
           Notionday
         </a>
         <div className="d-flex ms-auto align-items-center">
-          <span className="me-3 text-primary fw-bold">{userName}</span>
-          <button className="btn btn-primary me-3" onClick={onLogout}>
+          <span className="me-3 text-white fw-bold">{userName}</span>
+          <button className="btn btn-light me-3" onClick={onLogout}>
+            <FontAwesomeIcon icon={faSignOutAlt} className="me-1" />
             Cerrar Sesión
           </button>
         </div>
@@ -61,96 +71,71 @@ const Layout = ({ userName, onLogout }) => {
       <div id="layoutSidenav">
         {/* Menú Lateral */}
         <div id="layoutSidenav_nav">
-          <nav className="sb-sidenav accordion sb-sidenav-light bg-light">
+          <nav className="sb-sidenav accordion sb-sidenav-dark bg-dark">
             <div className="sb-sidenav-menu">
               <div className="nav">
                 {permisos === "Nivel 1" && (
                   <>
-                    <div className="sb-sidenav-menu-heading text-primary">
+                    <div className="sb-sidenav-menu-heading text-white">
                       Navegación
                     </div>
                     <button
-                      className="btn btn-link sb-nav-link"
+                      className="btn btn-link sb-nav-link text-white"
                       onClick={() => navigate("/dashboard")}
                     >
+                      <FontAwesomeIcon icon={faHome} className="me-2" />
                       Inicio
                     </button>
-                    <div className="sb-sidenav-menu-heading text-primary">
+                    <div className="sb-sidenav-menu-heading text-white">
                       Seguridad
                     </div>
-                    {renderSubMenu("Seguridad", [
-                      { label: "Usuarios", path: "/usuarios" },
-                      { label: "Roles", path: "/roles" },
-                      { label: "Permisos", path: "/permisos" },
-                    ])}
-                    <div className="sb-sidenav-menu-heading text-primary">
+                    {renderSubMenu(
+                      "Seguridad",
+                      [
+                        { label: "Usuarios", path: "/usuarios" },
+                        { label: "Roles", path: "/roles" },
+                        { label: "Permisos", path: "/permisos" },
+                      ],
+                      faUserShield
+                    )}
+                    <div className="sb-sidenav-menu-heading text-white">
                       Portafolio
                     </div>
-                    {renderSubMenu("Portafolio", [
-                      { label: "Portafolio", path: "/portafolio" },
-                      { label: "Equipos", path: "/equipos" },
-                      { label: "Proyectos", path: "/proyectos" },
-                    ])}
-                    <div className="sb-sidenav-menu-heading text-primary">
+                    {renderSubMenu(
+                      "Portafolio",
+                      [
+                        { label: "Portafolio", path: "/portafolio" },
+                        { label: "Equipos", path: "/equipos" },
+                        { label: "Proyectos", path: "/proyectos" },
+                      ],
+                      faProjectDiagram
+                    )}
+                    <div className="sb-sidenav-menu-heading text-white">
                       Tareas
                     </div>
-                    {renderSubMenu("Tareas", [
-                      { label: "Tareas", path: "/tareas" },
-                    ])}
-                    {renderSubMenu("Sub-Tareas", [
-                      { label: "Sub-Tareas", path: "/subTareas" },
-                    ])}
-                    <div className="sb-sidenav-menu-heading text-primary">
+                    {renderSubMenu(
+                      "Tareas",
+                      [{ label: "Tareas", path: "/tareas" }],
+                      faTasks
+                    )}
+                    <div className="sb-sidenav-menu-heading text-white">
+                      Sub-Tareas
+                    </div>
+                    {renderSubMenu(
+                      "Subtareas",
+                      [{ label: "Subtareas", path: "/Subtareas" }],
+                      faTasks
+                    )}
+                    <div className="sb-sidenav-menu-heading text-white">
                       Reportes
                     </div>
                     <button
-                      className="btn btn-link sb-nav-link"
+                      className="btn btn-link sb-nav-link text-white"
                       onClick={() => navigate("/reportes")}
                     >
+                      <FontAwesomeIcon icon={faChartBar} className="me-2" />
                       Reportes
                     </button>
-                  </>
-                )}
-                {permisos === "Nivel 2" && (
-                  <>
-                    <div className="sb-sidenav-menu-heading text-primary">
-                      Navegación
-                    </div>
-                    <button
-                      className="btn btn-link sb-nav-link"
-                      onClick={() => navigate("/dashboard")}
-                    >
-                      Dashboard
-                    </button>
-                    <div className="sb-sidenav-menu-heading text-primary">
-                      Portafolio
-                    </div>
-                    {renderSubMenu("Portafolio", [
-                      { label: "Portafolio", path: "/portafolio" },
-                      { label: "Equipos", path: "/equipos" },
-                      { label: "Proyectos", path: "/proyectos" },
-                    ])}
-                  </>
-                )}
-                {permisos === "Nivel 3" && (
-                  <>
-                    <div className="sb-sidenav-menu-heading text-primary">
-                      Proyectos y Tareas
-                    </div>
-                    {renderSubMenu("Proyectos", [
-                      { label: "Proyectos", path: "/proyectos" },
-                      {
-                        label: "Comentarios de Proyectos",
-                        path: "/comentariosProyectos",
-                      },
-                    ])}
-                    {renderSubMenu("Tareas", [
-                      { label: "Tareas", path: "/tareas" },
-                      {
-                        label: "Comentarios de Tareas",
-                        path: "/comentariosTareas",
-                      },
-                    ])}
                   </>
                 )}
               </div>
@@ -162,7 +147,6 @@ const Layout = ({ userName, onLogout }) => {
         <div id="layoutSidenav_content">
           <main>
             <div className="container-fluid px-4 py-3">
-              {/* Renderizar subrutas aquí */}
               <Outlet />
             </div>
           </main>

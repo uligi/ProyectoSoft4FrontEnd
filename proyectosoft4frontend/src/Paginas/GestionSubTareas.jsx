@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import usePermisos from "../hooks/Permisos";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlusCircle,
+  faEdit,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+  faTasks,
+  faExclamationCircle,
+  faCheckDouble,
+  faClock,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
 
 const GestionSubtareas = () => {
   const [subtareas, setSubtareas] = useState([]);
@@ -14,7 +28,8 @@ const GestionSubtareas = () => {
   const [textoEditando, setTextoEditando] = useState("");
   const [nuevoComentario, setNuevoComentario] = useState("");
 
-  const [idUsuarioSesion] = useState(1);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const { UserID } = usePermisos(user?.idUsuarios);
 
   useEffect(() => {
     listarSubtareas();
@@ -229,7 +244,7 @@ const GestionSubtareas = () => {
         Comentario: nuevoComentario,
         FechaCreacion: fechaActual,
         idSubtarea: subtareaSeleccionada.idTareas,
-        idUsuario: idUsuarioSesion,
+        idUsuario: user?.idUsuarios,
       };
 
       const response = await axios.post(
@@ -249,17 +264,20 @@ const GestionSubtareas = () => {
   };
   return (
     <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">Gestión de Subtareas</div>
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faTasks} className="me-2" />
+          Gestión de Subtareas
+        </div>
         <div className="card-body">
           <button
-            className="btn btn-success mb-3"
+            className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
             Agregar Subtarea
           </button>
-          <table className="table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -282,26 +300,53 @@ const GestionSubtareas = () => {
                   <td>{subtarea.Prioridad}</td>
                   <td>{subtarea.FechaInicio || "Sin asignar"}</td>
                   <td>{subtarea.FechaFinal || "Sin asignar"}</td>
-                  <td>{subtarea.Estado || "Activo"}</td>
+
                   <td>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => abrirComentarios(subtarea)}
+                    <FontAwesomeIcon
+                      icon={
+                        subtarea.Estado === "Completado"
+                          ? faCheckDouble
+                          : subtarea.Estado === "Pendiente"
+                          ? faClock
+                          : faExclamationCircle
+                      }
+                      className={`text-${
+                        subtarea.Estado === "Completado"
+                          ? "success"
+                          : subtarea.Estado === "Pendiente"
+                          ? "warning"
+                          : "danger"
+                      }`}
+                    />
+                    {subtarea.Estado}
+                  </td>
+                  <td>
+                    <div
+                      className="btn-group gap-1"
+                      role="group"
+                      aria-label="Acciones"
                     >
-                      Comentarios
-                    </button>
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => abrirModal(subtarea)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => confirmarEliminacion(subtarea.idSubtareas)}
-                    >
-                      Eliminar
-                    </button>
+                      <button
+                        className="btn btn-info btn-sm me-2"
+                        onClick={() => abrirComentarios(subtarea)}
+                      >
+                        <FontAwesomeIcon icon={faComments} />
+                      </button>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => abrirModal(subtarea)}
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>
+                          confirmarEliminacion(subtarea.idSubtareas)
+                        }
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -310,23 +355,24 @@ const GestionSubtareas = () => {
         </div>
       </div>
       {modalVisible && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">
                   {subtareaSeleccionada.idSubtareas === 0
                     ? "Agregar Subtarea"
                     : "Editar Subtarea"}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalVisible(false)}
                 ></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label>Nombre de la Subtarea</label>
+                  <label className="form-label">Nombre de la Subtarea</label>
                   <input
                     type="text"
                     className="form-control"
@@ -340,7 +386,7 @@ const GestionSubtareas = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Descripción</label>
+                  <label className="form-label">Descripción</label>
                   <textarea
                     className="form-control"
                     rows="3"
@@ -374,7 +420,7 @@ const GestionSubtareas = () => {
                   </select>
                 </div>
                 <div className="mb-3">
-                  <label>Prioridad</label>
+                  <label className="form-label">Prioridad</label>
                   <select
                     className="form-select"
                     value={subtareaSeleccionada.Prioridad}
@@ -405,7 +451,7 @@ const GestionSubtareas = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Fecha Final</label>
+                  <label className="form-label">Fecha Final</label>
                   <input
                     type="date"
                     className="form-control"
@@ -419,7 +465,7 @@ const GestionSubtareas = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Estado</label>
+                  <label className="form-label">Estado</label>
                   <select
                     className="form-select"
                     value={subtareaSeleccionada.Estado}
@@ -457,13 +503,14 @@ const GestionSubtareas = () => {
       )}
       {modalComentariosVisible && (
         <div className="modal show d-block">
-          <div className="modal-dialog">
+          <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-secondary text-white">
                 <h5 className="modal-title">
-                  Comentarios de {subtareaSeleccionada?.NombreSubtarea}
+                  Comentarios de {subtareaSeleccionada.NombreTarea}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalComentariosVisible(false)}
                 ></button>
@@ -472,19 +519,19 @@ const GestionSubtareas = () => {
                 <ul className="list-group mb-3">
                   {comentarios.map((comentario) => (
                     <li
-                      className="list-group-item"
+                      className="list-group-item d-flex justify-content-between align-items-center"
                       key={comentario.idComentario}
                     >
                       {comentarioEditando === comentario.idComentario ? (
                         <>
                           <input
                             type="text"
-                            className="form-control"
+                            className="form-control me-2"
                             value={textoEditando}
                             onChange={(e) => setTextoEditando(e.target.value)}
                           />
                           <button
-                            className="btn btn-success btn-sm"
+                            className="btn btn-success btn-sm me-2"
                             onClick={() =>
                               editarComentario(
                                 comentario.idComentario,
@@ -492,36 +539,37 @@ const GestionSubtareas = () => {
                               )
                             }
                           >
-                            Guardar
+                            <FontAwesomeIcon icon={faCheckCircle} />
                           </button>
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => setComentarioEditando(null)}
                           >
-                            Cancelar
+                            <FontAwesomeIcon icon={faTimesCircle} />
                           </button>
                         </>
                       ) : (
                         <>
-                          {comentario.Comentario} -{" "}
-                          <small>{comentario.NombreUsuario}</small>
-                          <button
-                            className="btn btn-warning btn-sm ms-2"
-                            onClick={() => {
-                              setComentarioEditando(comentario.idComentario);
-                              setTextoEditando(comentario.Comentario);
-                            }}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            className="btn btn-danger btn-sm ms-2"
-                            onClick={() =>
-                              eliminarComentario(comentario.idComentario)
-                            }
-                          >
-                            ❌
-                          </button>
+                          <span>{comentario.Comentario}</span>
+                          <div>
+                            <button
+                              className="btn btn-warning btn-sm me-2"
+                              onClick={() => {
+                                setComentarioEditando(comentario.idComentario);
+                                setTextoEditando(comentario.Comentario);
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() =>
+                                eliminarComentario(comentario.idComentario)
+                              }
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          </div>
                         </>
                       )}
                     </li>
@@ -529,7 +577,7 @@ const GestionSubtareas = () => {
                 </ul>
               </div>
               <div className="modal-footer">
-                <div className="mb-3">
+                <div className="input-group">
                   <input
                     type="text"
                     className="form-control"
@@ -537,14 +585,17 @@ const GestionSubtareas = () => {
                     value={nuevoComentario}
                     onChange={(e) => setNuevoComentario(e.target.value)}
                   />
+                  <button
+                    className="btn btn-primary"
+                    onClick={agregarComentario}
+                  >
+                    <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
+                    Agregar
+                  </button>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button className="btn btn-primary" onClick={agregarComentario}>
-                  Agregar Comentario
-                </button>
                 <button
-                  className="btn btn-secondary"
+                  type="button"
+                  className="btn btn-secondary mt-2"
                   onClick={() => setModalComentariosVisible(false)}
                 >
                   Cerrar

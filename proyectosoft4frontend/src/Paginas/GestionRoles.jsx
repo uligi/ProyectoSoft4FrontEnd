@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUserShield,
+  faPlusCircle,
+  faEdit,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 
 const GestionRoles = () => {
   const [roles, setRoles] = useState([]);
-  const [permisos, setPermisos] = useState([]); // Nuevo estado para permisos
+  const [permisos, setPermisos] = useState([]);
   const [rolSeleccionado, setRolSeleccionado] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
 
   useEffect(() => {
     listarRoles();
-    listarPermisos(); // Cargar los permisos al montar el componente
+    listarPermisos();
   }, []);
 
   const listarRoles = async () => {
@@ -36,17 +43,12 @@ const GestionRoles = () => {
     }
   };
 
-  useEffect(() => {
-    listarRoles();
-    listarPermisos();
-  }, []);
-
   const abrirModal = (rol) => {
     setRolSeleccionado(
       rol || {
         idRoles: 0,
         Nombre_Roles: "",
-        idPermisos: 0, // Inicializar idPermisos
+        idPermisos: 0,
       }
     );
     setMensajeError(""); // Limpiar mensajes de error
@@ -129,17 +131,21 @@ const GestionRoles = () => {
 
   return (
     <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">Gestión de Roles</div>
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faUserShield} className="me-2" />
+          Gestión de Roles
+        </div>
         <div className="card-body">
           <button
-            className="btn btn-success mb-3"
+            className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
+            <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
             Agregar Rol
           </button>
-          <table className="table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
                 <th>Nombre</th>
@@ -157,16 +163,16 @@ const GestionRoles = () => {
                   </td>
                   <td>
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-sm me-2"
                       onClick={() => abrirModal(rol)}
                     >
-                      Editar
+                      <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
-                      className="btn btn-danger"
+                      className="btn btn-danger btn-sm"
                       onClick={() => confirmarEliminacion(rol.idRoles)}
                     >
-                      Eliminar
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>
@@ -177,21 +183,22 @@ const GestionRoles = () => {
       </div>
 
       {modalVisible && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">
                   {rolSeleccionado.idRoles === 0 ? "Agregar Rol" : "Editar Rol"}
                 </h5>
                 <button
+                  type="button"
                   className="btn-close"
                   onClick={() => setModalVisible(false)}
                 ></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label>Nombre del Rol</label>
+                  <label className="form-label">Nombre del Rol</label>
                   <input
                     type="text"
                     className="form-control"
@@ -205,7 +212,7 @@ const GestionRoles = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Permisos Asociados</label>
+                  <label className="form-label">Permisos Asociados</label>
                   <select
                     className="form-select"
                     value={rolSeleccionado.idPermisos || 0}
@@ -234,12 +241,17 @@ const GestionRoles = () => {
               </div>
               <div className="modal-footer">
                 <button
+                  type="button"
                   className="btn btn-secondary"
                   onClick={() => setModalVisible(false)}
                 >
                   Cancelar
                 </button>
-                <button className="btn btn-primary" onClick={guardarRol}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={guardarRol}
+                >
                   Guardar
                 </button>
               </div>

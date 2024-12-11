@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../CSS/Reportes.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faUsers,
+  faFolder,
+  faFileAlt,
+  faTasks,
+  faFilter,
+  faChartBar,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Reportes = () => {
   const [proyectos, setProyectos] = useState([]);
@@ -23,46 +34,34 @@ const Reportes = () => {
   }, []);
 
   const fetchProyectos = async () => {
-    // Limpiar los proyectos antes de la nueva búsqueda
     setProyectos([]);
-
     try {
       const response = await axios.get(
         `http://localhost:5234/api/Reportes/Proyectos`,
         {
-          params: {
-            idUsuario,
-            idEquipo,
-            idPortafolio,
-          },
+          params: { idUsuario, idEquipo, idPortafolio },
         }
       );
       setProyectos(response.data);
     } catch (error) {
       console.error("Error al obtener los proyectos:", error);
-      setProyectos([]); // Asegurarse de que la tabla se vacíe si hay un error
+      setProyectos([]);
     }
   };
 
   const fetchTareas = async () => {
-    // Limpiar las tareas antes de la nueva búsqueda
     setTareas([]);
-
     try {
       const response = await axios.get(
         `http://localhost:5234/api/Reportes/Tareas`,
         {
-          params: {
-            idUsuario,
-            idEquipo,
-            idPortafolio,
-          },
+          params: { idUsuario, idEquipo, idPortafolio },
         }
       );
       setTareas(response.data);
     } catch (error) {
       console.error("Error al obtener las tareas:", error);
-      setTareas([]); // Asegurarse de que la tabla se vacíe si hay un error
+      setTareas([]);
     }
   };
 
@@ -101,77 +100,113 @@ const Reportes = () => {
 
   return (
     <div className="reporte-container">
-      <h1 className="reporte-header">Reportes</h1>
+      <h1 className="reporte-header text-primary d-flex align-items-center">
+        <FontAwesomeIcon icon={faChartBar} className="me-2" />
+        Reportes
+      </h1>
 
-      <div className="reporte-selector">
+      <div className="reporte-selector mb-4 d-flex gap-3">
         <button
           className={`btn ${
             reporteSeleccionado === "Proyectos"
               ? "btn-primary"
-              : "btn-secondary"
+              : "btn-outline-primary"
           }`}
           onClick={() => setReporteSeleccionado("Proyectos")}
         >
+          <FontAwesomeIcon icon={faFolder} className="me-2" />
           Reporte de Proyectos
         </button>
         <button
           className={`btn ${
-            reporteSeleccionado === "Tareas" ? "btn-primary" : "btn-secondary"
+            reporteSeleccionado === "Tareas"
+              ? "btn-primary"
+              : "btn-outline-primary"
           }`}
           onClick={() => setReporteSeleccionado("Tareas")}
         >
+          <FontAwesomeIcon icon={faTasks} className="me-2" />
           Reporte de Tareas
         </button>
       </div>
 
-      <div>
-        <label>Usuario:</label>
-        <select
-          value={idUsuario}
-          onChange={(e) => setIdUsuario(e.target.value)}
-        >
-          <option value="">Seleccionar Usuario</option>
-          {usuarios.map((usuario) => (
-            <option key={usuario.idUsuarios} value={usuario.idUsuarios}>
-              {usuario.Nombre}
-            </option>
-          ))}
-        </select>
-
-        <label>Equipo:</label>
-        <select value={idEquipo} onChange={(e) => setIdEquipo(e.target.value)}>
-          <option value="">Seleccionar Equipo</option>
-          {equipos.map((equipo) => (
-            <option key={equipo.idEquipos} value={equipo.idEquipos}>
-              {equipo.NombreEquipos}
-            </option>
-          ))}
-        </select>
-
-        <label>Portafolio:</label>
-        <select
-          value={idPortafolio}
-          onChange={(e) => setIdPortafolio(e.target.value)}
-        >
-          <option value="">Seleccionar Portafolio</option>
-          {portafolios.map((portafolio) => (
-            <option
-              key={portafolio.idPortafolio}
-              value={portafolio.idPortafolio}
+      <div className="filters mb-4">
+        {reporteSeleccionado === "Tareas" && (
+          <div className="filter-group mb-3">
+            <label className="me-2">
+              <FontAwesomeIcon icon={faUser} className="me-1 text-secondary" />
+              Usuario:
+            </label>
+            <select
+              className="form-select"
+              value={idUsuario}
+              onChange={(e) => setIdUsuario(e.target.value)}
             >
-              {portafolio.NombrePortafolio}
-            </option>
-          ))}
-        </select>
+              <option value="">Seleccionar Usuario</option>
+              {usuarios.map((usuario) => (
+                <option key={usuario.idUsuarios} value={usuario.idUsuarios}>
+                  {usuario.Nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div className="filter-group mb-3">
+          <label className="me-2">
+            <FontAwesomeIcon icon={faUsers} className="me-1 text-secondary" />
+            Equipo:
+          </label>
+          <select
+            className="form-select"
+            value={idEquipo}
+            onChange={(e) => setIdEquipo(e.target.value)}
+          >
+            <option value="">Seleccionar Equipo</option>
+            {equipos.map((equipo) => (
+              <option key={equipo.idEquipos} value={equipo.idEquipos}>
+                {equipo.NombreEquipos}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {reporteSeleccionado === "Proyectos" && (
+          <div className="filter-group mb-3">
+            <label className="me-2">
+              <FontAwesomeIcon
+                icon={faFolder}
+                className="me-1 text-secondary"
+              />
+              Portafolio:
+            </label>
+            <select
+              className="form-select"
+              value={idPortafolio}
+              onChange={(e) => setIdPortafolio(e.target.value)}
+            >
+              <option value="">Seleccionar Portafolio</option>
+              {portafolios.map((portafolio) => (
+                <option
+                  key={portafolio.idPortafolio}
+                  value={portafolio.idPortafolio}
+                >
+                  {portafolio.NombrePortafolio}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {reporteSeleccionado === "Proyectos" && (
         <div>
-          <button className="btn btn-success" onClick={fetchProyectos}>
+          <button className="btn btn-success mb-3" onClick={fetchProyectos}>
+            <FontAwesomeIcon icon={faSearch} className="me-2" />
             Filtrar Proyectos
           </button>
-          <table className="reporte-table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="table-primary">
               <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
@@ -197,7 +232,7 @@ const Reportes = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: "center" }}>
+                  <td colSpan="7" className="text-center">
                     No hay registros
                   </td>
                 </tr>
@@ -209,11 +244,12 @@ const Reportes = () => {
 
       {reporteSeleccionado === "Tareas" && (
         <div>
-          <button className="btn btn-success" onClick={fetchTareas}>
+          <button className="btn btn-success mb-3" onClick={fetchTareas}>
+            <FontAwesomeIcon icon={faSearch} className="me-2" />
             Filtrar Tareas
           </button>
-          <table className="reporte-table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="table-primary">
               <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
@@ -239,7 +275,7 @@ const Reportes = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: "center" }}>
+                  <td colSpan="7" className="text-center">
                     No hay registros
                   </td>
                 </tr>

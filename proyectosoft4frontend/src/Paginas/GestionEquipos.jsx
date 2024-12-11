@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUsers,
+  faPlusCircle,
+  faEdit,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const GestionEquipos = () => {
   const [equipos, setEquipos] = useState([]);
@@ -8,7 +17,6 @@ const GestionEquipos = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
 
-  // Cargar la lista de equipos al iniciar
   useEffect(() => {
     listarEquipos();
   }, []);
@@ -114,17 +122,19 @@ const GestionEquipos = () => {
   return (
     <div className="container mt-4">
       <div className="card shadow-sm border-0">
-        <div className="card-header bg-gradient text-white">
-          <i className="fas fa-users me-2"></i> Gestión de Equipos
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faUsers} className="me-2" />
+          Gestión de Equipos
         </div>
         <div className="card-body">
           <button
             className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
-            <i className="fas fa-plus-circle me-2"></i>Agregar Equipo
+            <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
+            Agregar Equipo
           </button>
-          <table className="table table-hover">
+          <table className="table table-striped table-hover">
             <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
@@ -139,26 +149,23 @@ const GestionEquipos = () => {
                   <td>{equipo.idEquipos}</td>
                   <td>{equipo.NombreEquipos}</td>
                   <td>
-                    <span
-                      className={`badge ${
-                        equipo.Activo ? "bg-success" : "bg-danger"
-                      }`}
-                    >
-                      {equipo.Activo ? "Sí" : "No"}
-                    </span>
+                    <FontAwesomeIcon
+                      icon={equipo.Activo ? faCheckCircle : faTimesCircle}
+                      className={`text-${equipo.Activo ? "success" : "danger"}`}
+                    />
                   </td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm me-2"
                       onClick={() => abrirModal(equipo)}
                     >
-                      Editar
+                      <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() => confirmarEliminacion(equipo.idEquipos)}
                     >
-                      Eliminar
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>
@@ -209,7 +216,7 @@ const GestionEquipos = () => {
                   className="btn btn-secondary"
                   onClick={() => setModalVisible(false)}
                 >
-                  Cerrar
+                  Cancelar
                 </button>
                 <button
                   type="button"

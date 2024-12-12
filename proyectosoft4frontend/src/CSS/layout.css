@@ -12,8 +12,8 @@
 
 #submenu-Seguridad > ul {
     background-color: #161d24  !important;
-    border-radius: 8px; /* Ajusta el valor para redondear los bordes */
-    padding: 10px; /* Opcional: añade un poco de espacio interno */
+    border-radius: 8px; 
+    padding: 10px; 
 }
 
 #submenu-Portafolio > ul {
@@ -24,10 +24,10 @@
     background-color :#161d24 !important;
 }
 
-#submenu-Sub-Tareas > ul {
+#submenu-Subtareas > ul {
     background-color :#161d24 !important;
 }
-*/
+
 
 /* Cambiar el color de los encabezados de sección (por ejemplo, "Navegación", "Seguridad") */
 #layoutSidenav_nav .sb-sidenav-menu-heading {

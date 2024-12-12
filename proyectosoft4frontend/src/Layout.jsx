@@ -138,6 +138,70 @@ const Layout = ({ userName, onLogout }) => {
                     </button>
                   </>
                 )}
+                {permisos === "Nivel 1" || permisos === "Nivel 2" ? (
+                  <>
+                    <div className="sb-sidenav-menu-heading text-white">
+                      Navegación
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link text-white"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      <FontAwesomeIcon icon={faHome} className="me-2" />
+                      Inicio
+                    </button>
+                    <div className="sb-sidenav-menu-heading text-white">
+                      Portafolio
+                    </div>
+                    {renderSubMenu(
+                      "Portafolio",
+                      [
+                        { label: "Portafolio", path: "/portafolio" },
+                        { label: "Equipos", path: "/equipos" },
+                        { label: "Proyectos", path: "/proyectos" },
+                      ],
+                      faProjectDiagram
+                    )}
+                    <div className="sb-sidenav-menu-heading text-white">
+                      Tareas
+                    </div>
+                    {renderSubMenu(
+                      "Tareas",
+                      [{ label: "Tareas", path: "/tareas" }],
+                      faTasks
+                    )}
+                    <div className="sb-sidenav-menu-heading text-white">
+                      Reportes
+                    </div>
+                    <button
+                      className="btn btn-link sb-nav-link text-white"
+                      onClick={() => navigate("/reportes")}
+                    >
+                      <FontAwesomeIcon icon={faChartBar} className="me-2" />
+                      Reportes
+                    </button>
+                  </>
+                ) : null}
+                {permisos === "Nivel 3" ? (
+                  <>
+                    <div className="sb-sidenav-menu-heading text-white">
+                      Proyectos
+                    </div>
+                    {renderSubMenu(
+                      "Proyectos",
+                      [{ label: "Proyectos", path: "/proyectos" }],
+                      faProjectDiagram
+                    )}
+                    <div className="sb-sidenav-menu-heading text-white">
+                      Tareas
+                    </div>
+                    {renderSubMenu(
+                      "Tareas",
+                      [{ label: "Tareas", path: "/tareas" }],
+                      faTasks
+                    )}
+                  </>
+                ) : null}
               </div>
             </div>
           </nav>

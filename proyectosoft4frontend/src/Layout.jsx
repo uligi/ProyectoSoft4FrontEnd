@@ -107,6 +107,10 @@ const Layout = ({ userName, onLogout }) => {
                         { label: "Portafolio", path: "/portafolio" },
                         { label: "Equipos", path: "/equipos" },
                         { label: "Proyectos", path: "/proyectos" },
+                        {
+                          label: "Miembros de Equipos",
+                          path: "/miembrosEquipos",
+                        },
                       ],
                       faProjectDiagram
                     )}
@@ -138,7 +142,7 @@ const Layout = ({ userName, onLogout }) => {
                     </button>
                   </>
                 )}
-                {permisos === "Nivel 1" || permisos === "Nivel 2" ? (
+                {permisos === "Nivel 2" ? (
                   <>
                     <div className="sb-sidenav-menu-heading text-white">
                       Navegación
@@ -189,7 +193,12 @@ const Layout = ({ userName, onLogout }) => {
                     </div>
                     {renderSubMenu(
                       "Proyectos",
-                      [{ label: "Proyectos", path: "/proyectos" }],
+                      [
+                        {
+                          label: "Mis Proyectos",
+                          path: "/GestionProyectosPorUsuarios",
+                        },
+                      ],
                       faProjectDiagram
                     )}
                     <div className="sb-sidenav-menu-heading text-white">
@@ -218,7 +227,7 @@ const Layout = ({ userName, onLogout }) => {
             <div className="container-fluid px-4">
               <div className="d-flex align-items-center justify-content-between small">
                 <div className="text-muted">
-                  Copyright &copy; Notionday 2023
+                  Copyright &copy; Notionday 2024
                 </div>
                 <div>
                   <a href="#!">Política de Privacidad</a>

@@ -5,23 +5,38 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
+//layout y login
 import Layout from "./Layout";
 import Login from "./Acceso/Login";
 import CambiarClave from "./Acceso/CambiarClave";
-import DashboardMain from "./Paginas/Dashboard";
-import GestionUsuarios from "./Paginas/GestionUsuarios";
-import GestionRoles from "./Paginas/GestionRoles";
-import GestionPermisos from "./Paginas/GestionPermisos";
-import GestionPortafolio from "./Paginas/GestionPortafolio";
-import GestionEquipos from "./Paginas/GestionEquipos";
-import GestionProyectos from "./Paginas/GestionProyectos";
-import GestionMiembrosEquipos from "./Paginas/GestionMiembrosEquipos";
-import GestionTareas from "./Paginas/GestionTareas";
-import GestionSubTareas from "./Paginas/GestionSubTareas";
-import GestionComentariosProyectos from "./Paginas/GestionComentariosProyectos";
-import GestionComentariosSubTareas from "./Paginas/GestionComentariosSubTareas";
-import GestionComentariosTareas from "./Paginas/GestionComentariosTareas";
-import Reportes from "./Paginas/Reportes";
+
+//Dashboard
+import DashboardMain from "./Dashboard";
+
+//Admin
+import GestionUsuarios from "./PaginasAdmin/GestionUsuarios";
+import GestionRoles from "./PaginasAdmin/GestionRoles";
+import GestionPermisos from "./PaginasAdmin/GestionPermisos";
+import GestionPortafolio from "./PaginasAdmin/GestionPortafolio";
+import GestionEquipos from "./PaginasAdmin/GestionEquipos";
+import GestionProyectos from "./PaginasAdmin/GestionProyectos";
+import GestionMiembrosEquipos from "./PaginasAdmin/GestionMiembrosEquipos";
+import GestionTareas from "./PaginasAdmin/GestionTareas";
+import GestionSubTareas from "./PaginasAdmin/GestionSubTareas";
+import GestionComentariosProyectos from "./PaginasAdmin/GestionComentariosProyectos";
+import GestionComentariosSubTareas from "./PaginasAdmin/GestionComentariosSubTareas";
+import GestionComentariosTareas from "./PaginasAdmin/GestionComentariosTareas";
+
+//Empleado
+import GestionProyectosPorUsuarios from "./PaginasEmpleado/GestionProyectosPorUsuarios";
+import GestionTareasPorProyecto from "./PaginasEmpleado/GestionTareasPorProyecto";
+import GestionVistaTarea from "./PaginasEmpleado/GestionVistaTarea";
+
+//Gerente
+import Reportes from "./PaginasGerente/Reportes";
+
+//Errores
 import Error400 from "./PaginasErrores/400";
 import Error404 from "./PaginasErrores/404";
 import Error500 from "./PaginasErrores/500";
@@ -96,6 +111,20 @@ const App = () => {
           <Route path="tareas" element={<GestionTareas />} />
           <Route path="subTareas" element={<GestionSubTareas />} />
           <Route path="reportes" element={<Reportes />} />
+          <Route
+            path="GestionProyectosPorUsuarios"
+            element={<GestionProyectosPorUsuarios />}
+          />
+          <Route
+            path="GestionTareasPorProyecto/:idProyectos"
+            element={<GestionTareasPorProyecto />}
+          />
+
+          <Route
+            path="GestionVistaTarea/:idTarea"
+            element={<GestionVistaTarea />}
+          />
+
           <Route
             path="comentariosProyectos"
             element={<GestionComentariosProyectos />}

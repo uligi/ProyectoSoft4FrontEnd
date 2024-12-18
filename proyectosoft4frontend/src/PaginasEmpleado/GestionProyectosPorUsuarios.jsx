@@ -128,7 +128,7 @@ const GestionProyectosPorUsuarios = () => {
                     }
                   >
                     <FontAwesomeIcon icon={faTasks} className="me-2" />
-                    Ver Tareas
+                    Ver detalle
                   </button>
                 </div>
               </div>

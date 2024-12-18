@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import GestionVistaTarea from "./GestionVistaTarea";
 
 import Swal from "sweetalert2";
 import {
@@ -11,6 +10,11 @@ import {
   faExclamationCircle,
   faPlusCircle,
   faEye,
+  faComments,
+  faInfoCircle,
+  faTimesCircle,
+  faEdit,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
 const GestionTareasPorProyecto = () => {
@@ -21,6 +25,11 @@ const GestionTareasPorProyecto = () => {
   const [tareaSeleccionada, setTareaSeleccionada] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
+  const [comentarios, setComentarios] = useState([]);
+  const [modalComentariosVisible, setModalComentariosVisible] = useState(false);
+  const [nuevoComentario, setNuevoComentario] = useState("");
+  const [comentarioEditando, setComentarioEditando] = useState(null);
+  const [textoEditando, setTextoEditando] = useState("");
 
   const [proyectos, setProyectos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -194,6 +203,85 @@ const GestionTareasPorProyecto = () => {
     navigate(`/GestionDetalleTarea/${idTarea}`); // Ruta para ver detalles de tarea
   };
 
+  // Función para listar comentarios de un proyecto
+  const listarComentarios = async (idProyecto) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5234/api/ApiComentariosProyectos/ListarComentariosPorProyecto?idProyecto=${idProyecto}`
+      );
+      setComentarios(response.data);
+      setModalComentariosVisible(true);
+    } catch (error) {
+      console.error("Error al listar comentarios:", error);
+    }
+  };
+
+  // Función para agregar un nuevo comentario
+  const agregarComentario = async () => {
+    if (!nuevoComentario.trim()) {
+      Swal.fire("Error", "El comentario no puede estar vacío.", "error");
+      return;
+    }
+
+    try {
+      const fechaActual = new Date().toISOString();
+      const comentario = {
+        Comentario: nuevoComentario,
+        FechaCreacion: fechaActual,
+        idProyecto: proyecto.idProyectos,
+        idUsuario: user?.idUsuarios,
+      };
+
+      const response = await axios.post(
+        "http://localhost:5234/api/ApiComentariosProyectos/AgregarComentario",
+        comentario
+      );
+
+      if (response.status === 200) {
+        setNuevoComentario("");
+        listarComentarios(proyecto.idProyectos);
+        Swal.fire("Éxito", "Comentario agregado correctamente.", "success");
+      }
+    } catch (error) {
+      console.error("Error al agregar comentario:", error);
+      Swal.fire("Error", "No se pudo agregar el comentario.", "error");
+    }
+  };
+
+  // Función para editar un comentario existente
+  const editarComentario = async (id, texto) => {
+    try {
+      await axios.put(
+        `http://localhost:5234/api/ApiComentariosProyectos/ActualizarComentario/${id}`,
+        { idComentario: id, Comentario: texto }
+      );
+      listarComentarios(proyecto.idProyectos);
+      setComentarioEditando(null);
+      Swal.fire(
+        "Actualizado",
+        "Comentario actualizado correctamente.",
+        "success"
+      );
+    } catch (error) {
+      console.error("Error al actualizar comentario:", error);
+      Swal.fire("Error", "No se pudo actualizar el comentario.", "error");
+    }
+  };
+
+  // Función para eliminar un comentario existente
+  const eliminarComentario = async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:5234/api/ApiComentariosProyectos/EliminarComentario/${id}`
+      );
+      listarComentarios(proyecto.idProyectos);
+      Swal.fire("Eliminado", "Comentario eliminado correctamente.", "success");
+    } catch (error) {
+      console.error("Error al eliminar comentario:", error);
+      Swal.fire("Error", "No se pudo eliminar el comentario.", "error");
+    }
+  };
+
   return (
     <div className="container mt-4">
       {/* Botón para volver atrás */}
@@ -240,6 +328,13 @@ const GestionTareasPorProyecto = () => {
             {proyecto.Responsable || "No asignado"}
           </p>
         </div>
+        <button
+          className="btn btn-secondary w-100 mt-2"
+          onClick={() => listarComentarios(proyecto.idProyectos)}
+        >
+          <FontAwesomeIcon icon={faComments} className="me-2" />
+          Ver Comentarios
+        </button>
       </div>
 
       <div className="row">
@@ -471,6 +566,123 @@ const GestionTareasPorProyecto = () => {
                     onClick={guardarTarea}
                   >
                     Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}{" "}
+        {modalComentariosVisible && (
+          <div className="modal show d-block">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header bg-secondary text-white">
+                  <h5 className="modal-title">
+                    Comentarios del Proyecto: {proyecto.NombreProyecto || "N/A"}
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setModalComentariosVisible(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <ul className="list-group mb-3">
+                    {comentarios.length > 0 ? (
+                      comentarios.map((comentario) => (
+                        <li
+                          className="list-group-item d-flex justify-content-between align-items-center"
+                          key={comentario.idComentario}
+                        >
+                          {comentarioEditando === comentario.idComentario ? (
+                            <>
+                              <input
+                                type="text"
+                                className="form-control me-2"
+                                value={textoEditando}
+                                onChange={(e) =>
+                                  setTextoEditando(e.target.value)
+                                }
+                              />
+                              <button
+                                className="btn btn-success btn-sm me-2"
+                                onClick={() =>
+                                  editarComentario(
+                                    comentario.idComentario,
+                                    textoEditando
+                                  )
+                                }
+                              >
+                                <FontAwesomeIcon icon={faCheckCircle} />
+                              </button>
+                              <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => setComentarioEditando(null)}
+                              >
+                                <FontAwesomeIcon icon={faTimesCircle} />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <div>
+                                <strong>{comentario.NombreUsuario}:</strong>{" "}
+                                {comentario.Comentario}
+                              </div>
+                              <div>
+                                <button
+                                  className="btn btn-warning btn-sm me-2"
+                                  onClick={() => {
+                                    setComentarioEditando(
+                                      comentario.idComentario
+                                    );
+                                    setTextoEditando(comentario.Comentario);
+                                  }}
+                                >
+                                  <FontAwesomeIcon icon={faEdit} />
+                                </button>
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() =>
+                                    eliminarComentario(comentario.idComentario)
+                                  }
+                                >
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </li>
+                      ))
+                    ) : (
+                      <div className="alert alert-info text-center">
+                        No hay comentarios disponibles.
+                      </div>
+                    )}
+                  </ul>
+                </div>
+                <div className="modal-footer">
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Nuevo comentario"
+                      value={nuevoComentario}
+                      onChange={(e) => setNuevoComentario(e.target.value)}
+                    />
+                    <button
+                      className="btn btn-primary"
+                      onClick={agregarComentario}
+                    >
+                      <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
+                      Agregar
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-secondary mt-2"
+                    onClick={() => setModalComentariosVisible(false)}
+                  >
+                    Cerrar
                   </button>
                 </div>
               </div>

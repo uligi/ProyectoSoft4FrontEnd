@@ -550,7 +550,11 @@ const GestionSubtareas = () => {
                         </>
                       ) : (
                         <>
-                          <span>{comentario.Comentario}</span>
+                          {/* Mostrar el nombre del usuario y el comentario */}
+                          <div>
+                            <strong>{comentario.NombreUsuario}:</strong>{" "}
+                            {comentario.Comentario}
+                          </div>
                           <div>
                             <button
                               className="btn btn-warning btn-sm me-2"

@@ -38,6 +38,16 @@ const GestionTareas = () => {
     listarUsuarios();
   }, []);
 
+  useEffect(() => {
+    if (tareaSeleccionada) {
+      setTareaSeleccionada((prev) => ({
+        ...prev,
+        idProyectos: prev.idProyectos || proyectos[0]?.idProyectos || 0,
+        idUsuarios: prev.idUsuarios || usuarios[0]?.idUsuarios || 0,
+      }));
+    }
+  }, [proyectos, usuarios]);
+
   const listarTareas = async () => {
     try {
       const response = await axios.get(
@@ -79,36 +89,18 @@ const GestionTareas = () => {
 
   const abrirModal = (tarea) => {
     setTareaSeleccionada(
-      tarea
-        ? {
-            ...tarea,
-            idProyectos: proyectos.find(
-              (p) => p.idProyectos === tarea.idProyectos
-            )
-              ? tarea.idProyectos
-              : 0,
-            idUsuarios: usuarios.find((u) => u.idUsuarios === tarea.idUsuarios)
-              ? tarea.idUsuarios
-              : 0,
-            Prioridad: tarea.Prioridad || "Media",
-            FechaInicio: tarea.FechaInicio?.split("T")[0] || "",
-            FechaFinal: tarea.FechaFinal?.split("T")[0] || "",
-            Estado: tarea.Estado || "En proceso",
-          }
-        : {
-            idTareas: 0,
-            NombreTareas: "",
-            Descripcion: "",
-            Prioridad: "Media",
-            FechaInicio: "",
-            FechaFinal: "",
-            idProyectos: 0,
-            idUsuarios: 0,
-            Estado: "Activo",
-            Activo: true,
-          }
+      tarea || {
+        idTareas: 0,
+        NombreTareas: "",
+        Descripcion: "",
+        Prioridad: "Media",
+        FechaInicio: "",
+        FechaFinal: "",
+        idProyectos: proyectos.length > 0 ? proyectos[0].idProyectos : 0,
+        idUsuarios: usuarios.length > 0 ? usuarios[0].idUsuarios : 0,
+        Estado: "Activo",
+      }
     );
-
     setMensajeError("");
     setModalVisible(true);
   };
@@ -454,7 +446,7 @@ const GestionTareas = () => {
                   <input
                     type="date"
                     className="form-control"
-                    value={tareaSeleccionada.FechaInicio}
+                    value={tareaSeleccionada.FechaInicio?.split("T")[0] || ""}
                     onChange={(e) =>
                       setTareaSeleccionada({
                         ...tareaSeleccionada,
@@ -468,7 +460,7 @@ const GestionTareas = () => {
                   <input
                     type="date"
                     className="form-control"
-                    value={tareaSeleccionada.FechaFinal}
+                    value={tareaSeleccionada.FechaFinal?.split("T")[0] || ""}
                     onChange={(e) =>
                       setTareaSeleccionada({
                         ...tareaSeleccionada,
@@ -481,7 +473,7 @@ const GestionTareas = () => {
                   <label className="form-label">Proyecto</label>
                   <select
                     className="form-select"
-                    value={tareaSeleccionada.idProyectos || 0}
+                    value={tareaSeleccionada.idProyectos}
                     onChange={(e) =>
                       setTareaSeleccionada({
                         ...tareaSeleccionada,
@@ -489,7 +481,7 @@ const GestionTareas = () => {
                       })
                     }
                   >
-                    <option value="0">Seleccione un proyecto</option>
+                    <option value="0">Seleccione un Proyecto</option>
                     {proyectos.map((proyecto) => (
                       <option
                         key={proyecto.idProyectos}
@@ -505,7 +497,7 @@ const GestionTareas = () => {
                   <label className="form-label">Usuario</label>
                   <select
                     className="form-select"
-                    value={tareaSeleccionada.idUsuarios || 0}
+                    value={tareaSeleccionada.idUsuarios}
                     onChange={(e) =>
                       setTareaSeleccionada({
                         ...tareaSeleccionada,
@@ -513,7 +505,7 @@ const GestionTareas = () => {
                       })
                     }
                   >
-                    <option value="0">Seleccione un usuario</option>
+                    <option value="0">Seleccione un Usuario</option>
                     {usuarios.map((usuario) => (
                       <option
                         key={usuario.idUsuarios}
@@ -617,7 +609,11 @@ const GestionTareas = () => {
                         </>
                       ) : (
                         <>
-                          <span>{comentario.Comentario}</span>
+                          {/* Mostrar el nombre del usuario y el comentario */}
+                          <div>
+                            <strong>{comentario.NombreUsuario}:</strong>{" "}
+                            {comentario.Comentario}
+                          </div>
                           <div>
                             <button
                               className="btn btn-warning btn-sm me-2"

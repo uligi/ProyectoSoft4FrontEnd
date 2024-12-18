@@ -82,10 +82,14 @@ const GestionTareas = () => {
       tarea
         ? {
             ...tarea,
-            idProyectos: tarea.idProyectos
-              ? parseInt(tarea.idProyectos, 10)
+            idProyectos: proyectos.find(
+              (p) => p.idProyectos === tarea.idProyectos
+            )
+              ? tarea.idProyectos
               : 0,
-            idUsuarios: tarea.idUsuarios ? parseInt(tarea.idUsuarios, 10) : 0,
+            idUsuarios: usuarios.find((u) => u.idUsuarios === tarea.idUsuarios)
+              ? tarea.idUsuarios
+              : 0,
             Prioridad: tarea.Prioridad || "Media",
             FechaInicio: tarea.FechaInicio?.split("T")[0] || "",
             FechaFinal: tarea.FechaFinal?.split("T")[0] || "",
@@ -104,6 +108,7 @@ const GestionTareas = () => {
             Activo: true,
           }
     );
+
     setMensajeError("");
     setModalVisible(true);
   };
@@ -202,6 +207,7 @@ const GestionTareas = () => {
       }
     });
   };
+
   const listarComentarios = async (idTarea) => {
     try {
       const response = await axios.get(
@@ -411,20 +417,7 @@ const GestionTareas = () => {
                     }
                   />
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">Nombre del Proyecto</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={tareaSeleccionada.NombreTarea}
-                    onChange={(e) =>
-                      setTareaSeleccionada({
-                        ...tareaSeleccionada,
-                        NombreTarea: e.target.value,
-                      })
-                    }
-                  />
-                </div>
+
                 <div className="mb-3">
                   <label className="form-label">Descripción</label>
                   <textarea
@@ -488,7 +481,7 @@ const GestionTareas = () => {
                   <label className="form-label">Proyecto</label>
                   <select
                     className="form-select"
-                    value={tareaSeleccionada.idProyectos}
+                    value={tareaSeleccionada.idProyectos || 0}
                     onChange={(e) =>
                       setTareaSeleccionada({
                         ...tareaSeleccionada,
@@ -507,6 +500,7 @@ const GestionTareas = () => {
                     ))}
                   </select>
                 </div>
+
                 <div className="mb-3">
                   <label className="form-label">Usuario</label>
                   <select
@@ -530,6 +524,7 @@ const GestionTareas = () => {
                     ))}
                   </select>
                 </div>
+
                 <div className="mb-3">
                   <label className="form-label">Estado</label>
                   <select

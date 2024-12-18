@@ -61,14 +61,22 @@ const GestionMiembrosEquipos = () => {
     setModalVisible(true);
   };
 
-  const guardarMiembro = async () => {
+  const guardarMiembro = async (forzar = false) => {
     const { idMiembros_de_equipos, idEquipos, idUsuarios } =
       miembroSeleccionado;
 
-    if (idEquipos === 0 || idUsuarios === 0) {
+    if (!idEquipos || !idUsuarios) {
       setMensajeError("Debe seleccionar un equipo y un usuario.");
       return;
     }
+
+    const payload = {
+      idEquipos: parseInt(idEquipos, 10),
+      idUsuarios: parseInt(idUsuarios, 10),
+      forzar: forzar, // Aquí mantenemos el valor correctamente
+    };
+
+    console.log("Payload enviado:", payload);
 
     try {
       const url =
@@ -78,20 +86,56 @@ const GestionMiembrosEquipos = () => {
 
       const response =
         idMiembros_de_equipos === 0
-          ? await axios.post(url, { idEquipos, idUsuarios })
-          : await axios.put(url, { idEquipos, idUsuarios });
+          ? await axios.post(url, payload) // Nuevo miembro
+          : await axios.put(url, payload); // Actualizar miembro existente
 
-      if (response.status === 200) {
+      const respuesta = response.data[0];
+
+      // Lógica específica para el Código -4
+      if (respuesta.Codigo === -4 && !forzar) {
+        console.log("Código -4 recibido. Mostrando alerta de confirmación.");
+        Swal.fire({
+          title: "Advertencia",
+          text: respuesta.Mensaje,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Agregar de todos modos",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            console.log("Confirmación para forzar el guardado.");
+            await guardarMiembro(true); // Llamada explícita con forzar = true
+          }
+        });
+        return; // Detenemos aquí para evitar llamadas adicionales
+      }
+      if (respuesta.Codigo === -5 && !forzar) {
+        console.log("Código -5 recibido. Mostrando alerta de confirmación.");
+        Swal.fire({
+          title: "Advertencia",
+          text: respuesta.Mensaje,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Forzar Actualización",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            console.log("Confirmación para forzar la actualización.");
+            await guardarMiembro(true); // Llama nuevamente con forzar = true
+          }
+        });
+        return; // Evita continuar hasta que el usuario confirme
+      }
+
+      // Caso de éxito
+      if (respuesta.Codigo === 1) {
         await listarMiembros();
         setModalVisible(false);
-        Swal.fire({
-          title: "Éxito",
-          text:
-            idMiembros_de_equipos === 0
-              ? "Miembro agregado."
-              : "Miembro actualizado.",
-          icon: "success",
-        });
+        Swal.fire("Éxito", "Miembro guardado exitosamente.", "success");
+      } else if (respuesta.Codigo === -3) {
+        Swal.fire("Error", respuesta.Mensaje, "error");
+      } else {
+        Swal.fire("Error", "Respuesta inesperada del servidor.", "error");
       }
     } catch (error) {
       console.error("Error al guardar miembro:", error);
@@ -157,6 +201,15 @@ const GestionMiembrosEquipos = () => {
                   <td>{miembro.NombreEquipos}</td> {/* Cambiar aquí */}
                   <td>{miembro.NombreUsuario}</td>
                   <td>
+                    {/* Botón Editar */}
+                    <button
+                      className="btn btn-warning btn-sm me-2"
+                      onClick={() => abrirModal(miembro)}
+                    >
+                      Editar
+                    </button>
+
+                    {/* Botón Eliminar */}
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() =>
@@ -242,7 +295,10 @@ const GestionMiembrosEquipos = () => {
                 >
                   Cerrar
                 </button>
-                <button className="btn btn-primary" onClick={guardarMiembro}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => guardarMiembro()}
+                >
                   Guardar
                 </button>
               </div>

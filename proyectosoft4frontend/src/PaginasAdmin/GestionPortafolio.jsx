@@ -126,6 +126,26 @@ const GestionPortafolio = () => {
     });
   };
 
+  const reactivarPortafolio = async (idPortafolio) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5234/api/ApiPortafolio/ReactivarPortafolio/${idPortafolio}`
+      );
+
+      if (response.status === 200) {
+        Swal.fire("Éxito", "Portafolio reactivado exitosamente.", "success");
+        listarPortafolios(); // Refrescar la lista de portafolios
+      }
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error.response?.data ||
+          "Hubo un problema al intentar reactivar el portafolio.",
+        "error"
+      );
+    }
+  };
+
   return (
     <div className="container mt-4">
       <div className="card shadow-sm border-0">
@@ -166,20 +186,37 @@ const GestionPortafolio = () => {
                     />
                   </td>
                   <td>
-                    <button
-                      className="btn btn-primary btn-sm me-2"
-                      onClick={() => abrirModal(portafolio)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() =>
-                        confirmarEliminacion(portafolio.idPortafolio)
-                      }
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                    {portafolio.Activo ? (
+                      <>
+                        <button
+                          className="btn btn-primary btn-sm me-2"
+                          onClick={() => abrirModal(portafolio)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() =>
+                            confirmarEliminacion(portafolio.idPortafolio)
+                          }
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() =>
+                          reactivarPortafolio(portafolio.idPortafolio)
+                        }
+                      >
+                        <FontAwesomeIcon
+                          icon={faCheckCircle}
+                          className="me-1"
+                        />
+                        Reactivar
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

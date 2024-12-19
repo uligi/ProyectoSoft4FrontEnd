@@ -119,6 +119,25 @@ const GestionEquipos = () => {
     });
   };
 
+  const reactivarEquipos = async (idEquipos) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5234/api/ApiEquipos/ReactivarEquipos/${idEquipos}`
+      );
+
+      if (response.status === 200) {
+        Swal.fire("Éxito", "Equipo reactivado exitosamente.", "success");
+        listarEquipos(); // Refrescar la lista de portafolios
+      }
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error.response?.data ||
+          "Hubo un problema al intentar reactivar el equipo.",
+        "error"
+      );
+    }
+  };
   return (
     <div className="container mt-4">
       <div className="card shadow-sm border-0">
@@ -155,18 +174,33 @@ const GestionEquipos = () => {
                     />
                   </td>
                   <td>
-                    <button
-                      className="btn btn-primary btn-sm me-2"
-                      onClick={() => abrirModal(equipo)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => confirmarEliminacion(equipo.idEquipos)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                    {equipo.Activo ? (
+                      <>
+                        <button
+                          className="btn btn-primary btn-sm me-2"
+                          onClick={() => abrirModal(equipo)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => confirmarEliminacion(equipo.idEquipos)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => reactivarEquipos(equipo.idEquipos)}
+                      >
+                        <FontAwesomeIcon
+                          icon={faCheckCircle}
+                          className="me-1"
+                        />
+                        Reactivar
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -20,6 +20,18 @@ const CambiarClave = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const esContrasenaValida = (password) => {
+      const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      return regex.test(password);
+    };
+
+    if (!esContrasenaValida(nuevaContrasena)) {
+      setError(
+        "La contraseña debe tener al menos 8 caracteres, una letra mayúscula, un carácter especial y un número."
+      );
+      return;
+    }
+
     if (nuevaContrasena !== confirmarContrasena) {
       setError("Las contraseñas no coinciden.");
       return;

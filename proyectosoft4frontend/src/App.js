@@ -36,7 +36,10 @@ import GestionTareasPorUsuarios from "./PaginasEmpleado/GestionTareasPorUsuarios
 
 //Gerente
 import Reportes from "./PaginasGerente/Reportes";
-
+import GestionPortafoliosPorGerente from "./PaginasGerente/GestionPortafoliosPorGerente";
+import GestionEquiposPorGerente from "./PaginasGerente/GestionEquiposPorGerente";
+import GestionMiembrosdeEquiposPorGerente from "./PaginasGerente/GestionMiembrosdeEquiposPorGerente";
+import GestionProyectosPorGerente from "./PaginasGerente/GestionProyectosPorGerente";
 //Errores
 import Error400 from "./PaginasErrores/400";
 import Error404 from "./PaginasErrores/404";
@@ -144,6 +147,24 @@ const App = () => {
             path="comentariosSubTareas"
             element={<GestionComentariosSubTareas />}
           />
+          {/* Gerente*/}
+          <Route
+            path="GestionPortafoliosPorGerente"
+            element={<GestionPortafoliosPorGerente />}
+          />
+          <Route
+            path="GestionEquiposPorGerente"
+            element={<GestionEquiposPorGerente />}
+          />
+          <Route
+            path="GestionMiembrosdeEquiposPorGerente"
+            element={<GestionMiembrosdeEquiposPorGerente />}
+          />
+          <Route
+            path="GestionProyectosPorGerente"
+            element={<GestionProyectosPorGerente />}
+          />
+
           <Route path="/error-400" element={<Error400 />} />
           <Route path="/error-404" element={<Error404 />} />
           <Route path="/error-500" element={<Error500 />} />

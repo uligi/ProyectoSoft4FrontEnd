@@ -153,9 +153,22 @@ const Layout = ({ userName, onLogout }) => {
                     {renderSubMenu(
                       "Portafolio",
                       [
-                        { label: "Portafolio", path: "/portafolio" },
-                        { label: "Equipos", path: "/equipos" },
-                        { label: "Proyectos", path: "/proyectos" },
+                        {
+                          label: "+ Portafolio",
+                          path: "/GestionPortafoliosPorGerente",
+                        },
+                        {
+                          label: "+ Equipos",
+                          path: "/GestionEquiposPorGerente",
+                        },
+                        {
+                          label: "+ Miembros de equipos",
+                          path: "/GestionMiembrosdeEquiposPorGerente",
+                        },
+                        {
+                          label: "+ Proyectos",
+                          path: "/GestionProyectosPorGerente",
+                        },
                       ],
                       faProjectDiagram
                     )}
@@ -228,9 +241,9 @@ const Layout = ({ userName, onLogout }) => {
                   Copyright &copy; Notionday 2024
                 </div>
                 <div>
-                  <a href="#!">Política de Privacidad</a>
+                  <a href="./Politicas/Politicas.jsx">Política de Privacidad</a>
                   &middot;
-                  <a href="#!">Términos y Condiciones</a>
+                  <a href="./Politicas/Terminos.jsx">Términos y Condiciones</a>
                 </div>
               </div>
             </div>

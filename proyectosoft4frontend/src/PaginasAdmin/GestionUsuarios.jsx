@@ -68,6 +68,11 @@ const GestionUsuarios = () => {
       return;
     }
 
+    if (!validarEmail(Email)) {
+      setMensajeError("El correo electrónico no tiene un formato válido.");
+      return;
+    }
+
     try {
       const usuario = {
         Nombre,
@@ -101,10 +106,12 @@ const GestionUsuarios = () => {
         setMensajeError("Error al guardar el usuario.");
       }
     } catch (error) {
-      console.error("Error al guardar usuario:", error);
-
+      console.error(
+        "Error al guardar usuario:",
+        error.response?.data || error.message
+      );
       setMensajeError(
-        "Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo."
+        error.response?.data || "Hubo un error al procesar la solicitud."
       );
     }
   };
@@ -224,6 +231,11 @@ const GestionUsuarios = () => {
         restablecerContrasena(idUsuarios);
       }
     });
+  };
+
+  const validarEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   };
 
   return (
@@ -356,6 +368,10 @@ const GestionUsuarios = () => {
                     }
                   />
                 </div>
+                {mensajeError && (
+                  <div className="alert alert-danger">{mensajeError}</div>
+                )}
+
                 <div className="mb-3">
                   <label className="form-label">Rol</label>
                   <select

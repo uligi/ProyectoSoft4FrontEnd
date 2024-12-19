@@ -40,6 +40,7 @@ import GestionPortafoliosPorGerente from "./PaginasGerente/GestionPortafoliosPor
 import GestionEquiposPorGerente from "./PaginasGerente/GestionEquiposPorGerente";
 import GestionMiembrosdeEquiposPorGerente from "./PaginasGerente/GestionMiembrosdeEquiposPorGerente";
 import GestionProyectosPorGerente from "./PaginasGerente/GestionProyectosPorGerente";
+import GestionProyectosPorPortafolio from "./PaginasGerente/GestionProyectosPorPortafolio";
 //Errores
 import Error400 from "./PaginasErrores/400";
 import Error404 from "./PaginasErrores/404";
@@ -163,6 +164,10 @@ const App = () => {
           <Route
             path="GestionProyectosPorGerente"
             element={<GestionProyectosPorGerente />}
+          />
+          <Route
+            path="/GestionProyectosPorPortafolio/:idPortafolio"
+            element={<GestionProyectosPorPortafolio />}
           />
 
           <Route path="/error-400" element={<Error400 />} />

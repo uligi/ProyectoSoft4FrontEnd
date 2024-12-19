@@ -7,13 +7,16 @@ import {
   faEdit,
   faTrash,
   faBriefcase,
+  faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 const GestionPortafoliosPorGerente = () => {
   const [portafolios, setPortafolios] = useState([]);
   const [portafolioSeleccionado, setPortafolioSeleccionado] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     listarPortafolios();
@@ -153,20 +156,31 @@ const GestionPortafoliosPorGerente = () => {
                 </p>
                 <div className="d-flex justify-content-between mt-3">
                   <button
-                    className="btn btn-primary"
+                    className="btn btn-sm btn-primary"
                     onClick={() => abrirModal(portafolio)}
                   >
                     <FontAwesomeIcon icon={faEdit} className="me-1" />
                     Editar
                   </button>
                   <button
-                    className="btn btn-danger"
+                    className="btn btn-sm btn-danger"
                     onClick={() =>
                       confirmarEliminacion(portafolio.idPortafolio)
                     }
                   >
                     <FontAwesomeIcon icon={faTrash} className="me-1" />
                     Eliminar
+                  </button>
+                  <button
+                    className="btn btn-sm btn-info"
+                    onClick={() =>
+                      navigate(
+                        `/GestionProyectosPorPortafolio/${portafolio.idPortafolio}`
+                      )
+                    }
+                  >
+                    <FontAwesomeIcon icon={faInfoCircle} className="me-1" />
+                    Más Detalle
                   </button>
                 </div>
               </div>

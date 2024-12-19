@@ -165,31 +165,9 @@ const Layout = ({ userName, onLogout }) => {
                           label: "+ Miembros de equipos",
                           path: "/GestionMiembrosdeEquiposPorGerente",
                         },
-                        {
-                          label: "+ Proyectos",
-                          path: "/GestionProyectosPorGerente",
-                        },
                       ],
                       faProjectDiagram
                     )}
-                    <div className="sb-sidenav-menu-heading text-white">
-                      Tareas
-                    </div>
-                    {renderSubMenu(
-                      "Tareas",
-                      [{ label: "Tareas", path: "/tareas" }],
-                      faTasks
-                    )}
-                    <div className="sb-sidenav-menu-heading text-white">
-                      Reportes
-                    </div>
-                    <button
-                      className="btn btn-link sb-nav-link text-white"
-                      onClick={() => navigate("/reportes")}
-                    >
-                      <FontAwesomeIcon icon={faChartBar} className="me-2" />
-                      Reportes
-                    </button>
                   </>
                 ) : null}
                 {permisos === "Nivel 3" ? (

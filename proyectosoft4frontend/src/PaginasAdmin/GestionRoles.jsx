@@ -7,6 +7,8 @@ import {
   faPlusCircle,
   faEdit,
   faTrash,
+  faCheckCircle,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 const GestionRoles = () => {
@@ -129,6 +131,21 @@ const GestionRoles = () => {
     });
   };
 
+  const reactivarRol = async (idRoles) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5234/api/ApiRoles/ReactivarRol/${idRoles}`
+      );
+      if (response.status === 200) {
+        listarRoles();
+        Swal.fire("Reactivado", "Rol reactivado correctamente.", "success");
+      }
+    } catch (error) {
+      console.error("Error al reactivar rol:", error);
+      Swal.fire("Error", "No se pudo reactivar el rol.", "error");
+    }
+  };
+
   return (
     <div className="container mt-4">
       <div className="card shadow-sm border-0">
@@ -150,6 +167,7 @@ const GestionRoles = () => {
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Permiso Asociado</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -161,19 +179,39 @@ const GestionRoles = () => {
                   <td>
                     {rol.Permiso ? rol.Permiso.Nombre_Permisos : "Sin permiso"}
                   </td>
+                  <FontAwesomeIcon
+                    icon={rol.Activo ? faCheckCircle : faTimesCircle}
+                    className={`text-${rol.Activo ? "success" : "danger"}`}
+                  />
+
                   <td>
-                    <button
-                      className="btn btn-primary btn-sm me-2"
-                      onClick={() => abrirModal(rol)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => confirmarEliminacion(rol.idRoles)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                    {rol.Activo ? (
+                      <>
+                        <button
+                          className="btn btn-primary btn-sm me-2"
+                          onClick={() => abrirModal(rol)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => confirmarEliminacion(rol.idRoles)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => reactivarRol(rol.idRoles)}
+                      >
+                        <FontAwesomeIcon
+                          icon={faCheckCircle}
+                          className="me-1"
+                        />
+                        Reactivar
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

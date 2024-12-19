@@ -9,6 +9,7 @@ import {
   faTrash,
   faCheckCircle,
   faTimesCircle,
+  faKey,
 } from "@fortawesome/free-solid-svg-icons";
 
 const GestionUsuarios = () => {
@@ -17,6 +18,7 @@ const GestionUsuarios = () => {
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [mensajeError, setMensajeError] = useState("");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     listarUsuarios();
@@ -100,6 +102,7 @@ const GestionUsuarios = () => {
       }
     } catch (error) {
       console.error("Error al guardar usuario:", error);
+
       setMensajeError(
         "Hubo un error al procesar la solicitud. Por favor, inténtalo de nuevo."
       );
@@ -145,6 +148,84 @@ const GestionUsuarios = () => {
     });
   };
 
+  const reactivarUsuario = async (idUsuarios) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5234/api/ApiUsuarios/ReactivarUsuario/${idUsuarios}`
+      );
+      if (response.status === 200) {
+        listarUsuarios();
+        Swal.fire(
+          "Reactivado",
+          "El usuario ha sido reactivado correctamente.",
+          "success"
+        );
+      }
+    } catch (error) {
+      console.error("Error al reactivar usuario:", error);
+      Swal.fire(
+        "Error",
+        "Hubo un problema al intentar reactivar el usuario.",
+        "error"
+      );
+    }
+  };
+
+  const confirmarReactivacion = (idUsuarios) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción reactivará al usuario.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Reactivar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        reactivarUsuario(idUsuarios);
+      }
+    });
+  };
+
+  const restablecerContrasena = async (idUsuarios) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5234/api/ApiUsuarios/RestablecerContrasena/${idUsuarios}`
+      );
+
+      if (response.status === 200) {
+        Swal.fire(
+          "Éxito",
+          "La contraseña fue restablecida y enviada al correo del usuario.",
+          "success"
+        );
+      }
+    } catch (error) {
+      console.error("Error al restablecer contraseña:", error);
+      Swal.fire(
+        "Error",
+        "Hubo un problema al intentar restablecer la contraseña.",
+        "error"
+      );
+    }
+  };
+
+  const confirmarRestablecerContrasena = (idUsuarios) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esto generará una nueva contraseña para el usuario.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Restablecer",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        restablecerContrasena(idUsuarios);
+      }
+    });
+  };
+
   return (
     <div className="container mt-4">
       <div className="card shadow-sm border-0">
@@ -177,28 +258,51 @@ const GestionUsuarios = () => {
                   <td>{usuario.idUsuarios}</td>
                   <td>{usuario.Nombre}</td>
                   <td>{usuario.Email}</td>
-                  <td>{usuario.Nombre_Roles}</td>
+                  <td>{usuario.Rol?.Nombre_Roles || "Sin Rol"}</td>
+
+                  <FontAwesomeIcon
+                    icon={usuario.Activo ? faCheckCircle : faTimesCircle}
+                    className={`text-${usuario.Activo ? "success" : "danger"}`}
+                  />
+
                   <td>
-                    <FontAwesomeIcon
-                      icon={usuario.Activo ? faCheckCircle : faTimesCircle}
-                      className={`text-${
-                        usuario.Activo ? "success" : "danger"
-                      }`}
-                    />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary btn-sm me-2"
-                      onClick={() => abrirModal(usuario)}
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => confirmarEliminacion(usuario.idUsuarios)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                    {usuario.idUsuarios !== user?.idUsuarios && ( // Ocultar acciones para el usuario actual
+                      <>
+                        {usuario.Activo ? (
+                          <>
+                            <button
+                              className="btn btn-primary btn-sm me-2"
+                              onClick={() => abrirModal(usuario)}
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm me-2"
+                              onClick={() =>
+                                eliminarUsuario(usuario.idUsuarios)
+                              }
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                            <button
+                              className="btn btn-warning btn-sm"
+                              onClick={() =>
+                                restablecerContrasena(usuario.idUsuarios)
+                              }
+                            >
+                              <FontAwesomeIcon icon={faKey} />
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            className="btn btn-success btn-sm"
+                            onClick={() => reactivarUsuario(usuario.idUsuarios)}
+                          >
+                            <FontAwesomeIcon icon={faCheckCircle} />
+                          </button>
+                        )}
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

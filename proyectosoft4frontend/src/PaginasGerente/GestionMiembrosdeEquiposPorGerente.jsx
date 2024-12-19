@@ -37,7 +37,7 @@ const GestionMiembrosdeEquiposPorGerente = () => {
   const listarUsuarios = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5234/api/ApiUsuarios/ListaUsuarios"
+        "http://localhost:5234/api/ApiUsuarios/ListaUsuariosActivos"
       );
       setUsuarios(response.data);
     } catch (error) {

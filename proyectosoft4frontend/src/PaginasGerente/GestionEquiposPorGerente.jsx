@@ -22,7 +22,7 @@ const GestionEquiposPorGerente = () => {
   const listarEquipos = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5234/api/ApiEquipos/ListaEquipos"
+        "http://localhost:5234/api/ApiEquipos/ListaEquiposActivos"
       );
       setEquipos(response.data);
     } catch (error) {

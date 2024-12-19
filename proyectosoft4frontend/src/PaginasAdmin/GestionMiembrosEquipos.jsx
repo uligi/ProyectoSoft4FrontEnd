@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUsers,
+  faPlusCircle,
+  faEdit,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const GestionMiembrosEquipos = () => {
   const [miembros, setMiembros] = useState([]);
@@ -176,17 +185,21 @@ const GestionMiembrosEquipos = () => {
 
   return (
     <div className="container mt-4">
-      <div className="card">
-        <div className="card-header">Gestión de Miembros de Equipos</div>
+      <div className="card shadow-sm border-0">
+        <div className="card-header bg-primary text-white d-flex align-items-center">
+          <FontAwesomeIcon icon={faUsers} className="me-2" />
+          Gestión de Miembros de Equipos
+        </div>
         <div className="card-body">
           <button
-            className="btn btn-success mb-3"
+            className="btn btn-success mb-3 rounded-pill px-4"
             onClick={() => abrirModal(null)}
           >
+            <FontAwesomeIcon icon={faPlusCircle} className="me-2" />
             Agregar Miembro
           </button>
-          <table className="table">
-            <thead>
+          <table className="table table-striped table-hover">
+            <thead className="bg-light text-primary">
               <tr>
                 <th>ID</th>
                 <th>Equipo</th>
@@ -203,10 +216,10 @@ const GestionMiembrosEquipos = () => {
                   <td>
                     {/* Botón Editar */}
                     <button
-                      className="btn btn-warning btn-sm me-2"
+                      className="btn btn-primary btn-sm me-2"
                       onClick={() => abrirModal(miembro)}
                     >
-                      Editar
+                      <FontAwesomeIcon icon={faEdit} />
                     </button>
 
                     {/* Botón Eliminar */}
@@ -216,7 +229,7 @@ const GestionMiembrosEquipos = () => {
                         confirmarEliminacion(miembro.idMiembros_de_equipos)
                       }
                     >
-                      Eliminar
+                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>
@@ -226,10 +239,10 @@ const GestionMiembrosEquipos = () => {
         </div>
       </div>
       {modalVisible && (
-        <div className="modal show d-block">
-          <div className="modal-dialog">
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">
                   {miembroSeleccionado.idMiembros_de_equipos === 0
                     ? "Agregar Miembro"

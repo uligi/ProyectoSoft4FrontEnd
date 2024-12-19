@@ -22,7 +22,7 @@ const GestionPortafoliosPorGerente = () => {
   const listarPortafolios = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5234/api/ApiPortafolio/ListaPortafolios"
+        "http://localhost:5234/api/ApiPortafolio/ListaPortafoliosActivos"
       );
       setPortafolios(response.data);
     } catch (error) {

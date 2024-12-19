@@ -179,6 +179,7 @@ const GestionRoles = () => {
                   <td>
                     {rol.Permiso ? rol.Permiso.Nombre_Permisos : "Sin permiso"}
                   </td>
+
                   <FontAwesomeIcon
                     icon={rol.Activo ? faCheckCircle : faTimesCircle}
                     className={`text-${rol.Activo ? "success" : "danger"}`}

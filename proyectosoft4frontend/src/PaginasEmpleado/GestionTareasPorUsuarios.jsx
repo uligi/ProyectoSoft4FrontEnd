@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faProjectDiagram,
   faTasks,
   faCalendar,
   faCheckCircle,
@@ -13,79 +12,80 @@ import {
 import Swal from "sweetalert2";
 import usePermisos from "../hooks/Permisos";
 
-const GestionProyectosPorUsuarios = () => {
-  const [proyectos, setProyectos] = useState([]);
-  const navigate = useNavigate(); // Define navigate
+const GestionTareasPorUsuarios = () => {
+  const [tareas, setTareas] = useState([]);
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const { UserID } = usePermisos(user?.idUsuarios);
 
   useEffect(() => {
-    listarProyectosPorUsuario();
-    return () => setProyectos([]); // Limpia los datos al desmontar
-  }, []);
+    listarTareasPorUsuario();
+  }, []); // Solo depende del montaje del componente
 
-  const listarProyectosPorUsuario = async () => {
+  const listarTareasPorUsuario = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5234/api/ApiProyectos/ListaProyectosPorUsuario?idUsuario=${user.idUsuarios}`
+        `http://localhost:5234/api/ApiTareas/ListarTareasPorUsuario?idUsuario=${user.idUsuarios}`
       );
-      setProyectos(response.data);
+      setTareas(response.data);
     } catch (error) {
-      console.error("Error al listar proyectos:", error);
-      Swal.fire("Error", "No se pudieron cargar los proyectos.", "error");
+      console.error("Error al listar tareas:", error);
+      Swal.fire("Error", "No se pudieron cargar las tareas.", "error");
     }
   };
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">Mis Proyectos</h2>
+      <h2 className="mb-4">Mis Tareas</h2>
       <div className="row">
-        {proyectos.length === 0 ? (
+        {tareas.length === 0 ? (
           <div className="col-12">
             <div className="card shadow-sm text-center">
               <div className="card-body">
                 <h5 className="card-title text-danger">
-                  No tienes proyectos asignados
+                  No tienes tareas asignadas
                 </h5>
                 <p className="card-text">
-                  Actualmente no estás asignado a ningún proyecto o equipo. Por
-                  favor, contacta con tu administrador para obtener más
-                  información.
+                  Actualmente no estás asignado a ninguna tarea. Por favor,
+                  contacta con tu administrador para obtener más información.
                 </p>
               </div>
             </div>
           </div>
         ) : (
-          proyectos.map((proyecto) => (
-            <div className="col-md-6 col-lg-4 mb-4" key={proyecto.idProyectos}>
+          tareas.map((tarea) => (
+            <div className="col-md-6 col-lg-4 mb-4" key={tarea.idTareas}>
               <div className="card shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title text-primary">
-                    <FontAwesomeIcon icon={faProjectDiagram} className="me-2" />
-                    {proyecto.NombreProyecto}
+                    <FontAwesomeIcon icon={faTasks} className="me-2" />
+                    {tarea.NombreTareas}
                   </h5>
+                  <p className="card-text">
+                    <strong>Proyecto:</strong> {tarea.NombreProyecto || "N/A"}
+                  </p>
                   <p className="card-text">
                     <strong>Prioridad:</strong>{" "}
                     <span
                       className={`text-${
-                        proyecto.Prioridad === "Alta"
+                        tarea.Prioridad === "Alta"
                           ? "danger"
-                          : proyecto.Prioridad === "Media"
+                          : tarea.Prioridad === "Media"
                           ? "warning"
                           : "success"
                       }`}
                     >
                       <FontAwesomeIcon
                         icon={
-                          proyecto.Prioridad === "Alta"
+                          tarea.Prioridad === "Alta"
                             ? faExclamationCircle
-                            : proyecto.Prioridad === "Media"
+                            : tarea.Prioridad === "Media"
                             ? faInfoCircle
                             : faCheckCircle
                         }
                         className="me-1"
                       />
-                      {proyecto.Prioridad}
+                      {tarea.Prioridad}
                     </span>
                   </p>
                   <p className="card-text">
@@ -94,8 +94,7 @@ const GestionProyectosPorUsuarios = () => {
                       className="me-2 text-secondary"
                     />
                     <strong>Inicio:</strong>{" "}
-                    {new Date(proyecto.FechaInicio).toLocaleDateString() ||
-                      "N/A"}
+                    {new Date(tarea.FechaInicio).toLocaleDateString() || "N/A"}
                   </p>
                   <p className="card-text">
                     <FontAwesomeIcon
@@ -103,29 +102,26 @@ const GestionProyectosPorUsuarios = () => {
                       className="me-2 text-secondary"
                     />
                     <strong>Fin:</strong>{" "}
-                    {new Date(proyecto.FechaFinal).toLocaleDateString() ||
-                      "N/A"}
+                    {new Date(tarea.FechaFinal).toLocaleDateString() || "N/A"}
                   </p>
                   <p className="card-text">
                     <strong>Estado:</strong>{" "}
                     <span
                       className={`badge bg-${
-                        proyecto.Estado === "Activo"
+                        tarea.Estado === "Activo"
                           ? "success"
-                          : proyecto.Estado === "Inactivo"
+                          : tarea.Estado === "Inactivo"
                           ? "secondary"
                           : "info"
                       }`}
                     >
-                      {proyecto.Estado}
+                      {tarea.Estado}
                     </span>
                   </p>
                   <button
                     className="btn btn-primary mt-3 w-100"
                     onClick={() =>
-                      navigate(
-                        `/GestionTareasPorProyecto/${proyecto.idProyectos}`
-                      )
+                      navigate(`/GestionVistaTarea/${tarea.idTareas}`)
                     }
                   >
                     <FontAwesomeIcon icon={faTasks} className="me-2" />
@@ -141,4 +137,4 @@ const GestionProyectosPorUsuarios = () => {
   );
 };
 
-export default GestionProyectosPorUsuarios;
+export default GestionTareasPorUsuarios;

@@ -32,6 +32,7 @@ import GestionComentariosTareas from "./PaginasAdmin/GestionComentariosTareas";
 import GestionProyectosPorUsuarios from "./PaginasEmpleado/GestionProyectosPorUsuarios";
 import GestionTareasPorProyecto from "./PaginasEmpleado/GestionTareasPorProyecto";
 import GestionVistaTarea from "./PaginasEmpleado/GestionVistaTarea";
+import GestionTareasPorUsuarios from "./PaginasEmpleado/GestionTareasPorUsuarios";
 
 //Gerente
 import Reportes from "./PaginasGerente/Reportes";
@@ -111,10 +112,16 @@ const App = () => {
           <Route path="tareas" element={<GestionTareas />} />
           <Route path="subTareas" element={<GestionSubTareas />} />
           <Route path="reportes" element={<Reportes />} />
+
           <Route
             path="GestionProyectosPorUsuarios"
             element={<GestionProyectosPorUsuarios />}
           />
+          <Route
+            path="GestionTareasPorUsuarios"
+            element={<GestionTareasPorUsuarios />}
+          />
+
           <Route
             path="GestionTareasPorProyecto/:idProyectos"
             element={<GestionTareasPorProyecto />}

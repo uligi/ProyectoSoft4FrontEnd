@@ -130,9 +130,6 @@ const Layout = ({ userName, onLogout }) => {
                       [{ label: "Subtareas", path: "/Subtareas" }],
                       faTasks
                     )}
-                    <div className="sb-sidenav-menu-heading text-white">
-                      Reportes
-                    </div>
                   </>
                 )}
                 {permisos === "Nivel 2" ? (

@@ -571,7 +571,11 @@ const GestionVistaTarea = () => {
                         </>
                       ) : (
                         <>
-                          <span>{comentario.Comentario}</span>
+                          <div>
+                            <strong>{comentario.NombreUsuario}:</strong>{" "}
+                            {comentario.Comentario}
+                          </div>
+
                           <div>
                             <button
                               className="btn btn-warning btn-sm me-2"

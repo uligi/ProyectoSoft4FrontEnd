@@ -110,9 +110,16 @@ const GestionUsuarios = () => {
         "Error al guardar usuario:",
         error.response?.data || error.message
       );
-      setMensajeError(
-        error.response?.data || "Hubo un error al procesar la solicitud."
-      );
+
+      if (error.response?.data?.includes("correo ya está registrado")) {
+        setMensajeError(
+          "El correo electrónico ya está registrado. Intenta con otro."
+        );
+      } else {
+        setMensajeError(
+          error.response?.data || "Hubo un error al procesar la solicitud."
+        );
+      }
     }
   };
 
